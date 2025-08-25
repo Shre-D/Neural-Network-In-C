@@ -1,0 +1,24 @@
+# .github/workflows/ci.yml
+name: C/C++ CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install build tools and linter
+        run: sudo apt-get update && sudo apt-get install -y clang-format cppcheck
+
+      - name: Check code formatting
+        run: |
+          find . -name "*.c" -o -name "*.h" | xargs clang-format -i --style=Google --dry-run --Werror-on-style-issue
+
+      - name: Run static code analysis
+        run: |
+          cppcheck --enable=all --suppress=missingIncludeSystem --inconclusive --error-exitcode=1 .
