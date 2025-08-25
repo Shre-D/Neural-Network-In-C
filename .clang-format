@@ -1,0 +1,3 @@
+# .clang-format
+BasedOnStyle: Google
+IndentWidth: 4

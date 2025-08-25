@@ -1,0 +1,28 @@
+# .github/workflows/ci.yml
+name: C/C++ CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install build tools and linter
+        run: sudo apt-get update && sudo apt-get install -y clang-format cppcheck
+
+      - name: Check code formatting
+        run: |
+          mkdir -p ../temp_repo
+          cp -r . ../temp_repo
+          find ../temp_repo -name "*.c" -o -name "*.h" | xargs clang-format -i --style=Google
+          diff -u -r ../temp_repo .
+
+      - name: Run static code analysis
+        run: |
+          # The suppress flag tells cppcheck to ignore unused function warnings.
+          cppcheck --enable=all -I nn/include --suppress=missingIncludeSystem --suppress=unusedFunction --inconclusive --error-exitcode=1 .

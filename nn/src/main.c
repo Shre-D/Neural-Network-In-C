@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int main(){
-    printf("NN Program");
-    return 0;
+int main() {
+  printf("NN Program");
+  return 0;
 }
