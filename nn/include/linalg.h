@@ -18,7 +18,7 @@ typedef struct _Matrix{
 //=====================
 
 Matrix* read_matrix(char* fileName);
-Matrix* create_matrix(int row, int cols);
+Matrix* create_matrix(int rows, int cols);
 Matrix* copy_matrix(const Matrix* m);
 Matrix* matrix_flatten(Matrix* m);
 void fill_matrix(Matrix* m, int n);
