@@ -21,7 +21,7 @@ typedef struct _Matrix{
 Matrix* read_matrix(char* fileName);
 Matrix* create_matrix(int rows, int cols);
 Matrix* copy_matrix(const Matrix* m);
-Matrix* matrix_flatten(Matrix* m); // Provided for intuitive code writing
+Matrix* flatten_matrix(Matrix* m, int axis);
 void fill_matrix(Matrix* m, double n);
 void randomize_matrix(Matrix* m);
 void free_matrix(Matrix* m);
