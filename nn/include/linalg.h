@@ -1,6 +1,7 @@
 #pragma once
 
 // _matrix is used to avoid confusion if the struct is self referencing
+// 1D array used, this is way more performant than a 2D array is
 typedef struct _Matrix{
   double* matrix_data;
   int rows;
@@ -20,7 +21,7 @@ typedef struct _Matrix{
 Matrix* read_matrix(char* fileName);
 Matrix* create_matrix(int rows, int cols);
 Matrix* copy_matrix(const Matrix* m);
-Matrix* matrix_flatten(Matrix* m);
+Matrix* matrix_flatten(Matrix* m); // Provided for intuitive code writing
 void fill_matrix(Matrix* m, int n);
 void randomize_matrix(Matrix* m);
 void free_matrix(Matrix* m);
