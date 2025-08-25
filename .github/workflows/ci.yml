@@ -17,14 +17,17 @@ jobs:
 
       - name: Check code formatting
         run: |
-          # Create a copy of the source code
-          cp -r . temp_repo
-          # Format the copied source code
-          find temp_repo -name "*.c" -o -name "*.h" | xargs clang-format -i --style=Google
+          # Create a temporary directory outside the current directory
+          mkdir -p ../temp_repo
+          # Copy all files into the temporary directory
+          cp -r . ../temp_repo
+          
+          # Now, format the copied source code
+          find ../temp_repo -name "*.c" -o -name "*.h" | xargs clang-format -i --style=Google
+          
           # Compare the original with the formatted code
-          diff -u temp_repo .
-          # If the diff command finds any differences, it will exit with a non-zero code and fail the workflow.
-
+          diff -u -r ../temp_repo .
+          
       - name: Run static code analysis
         run: |
           cppcheck --enable=all --suppress=missingIncludeSystem --inconclusive --error-exitcode=1 .
