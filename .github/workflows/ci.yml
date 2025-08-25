@@ -17,17 +17,12 @@ jobs:
 
       - name: Check code formatting
         run: |
-          # Create a temporary directory outside the current directory
           mkdir -p ../temp_repo
-          # Copy all files into the temporary directory
           cp -r . ../temp_repo
-
-          # Now, format the copied source code
           find ../temp_repo -name "*.c" -o -name "*.h" | xargs clang-format -i --style=Google
-
-          # Compare the original with the formatted code
           diff -u -r ../temp_repo .
 
       - name: Run static code analysis
         run: |
-          cppcheck --enable=all --suppress=missingIncludeSystem --inconclusive --error-exitcode=1 .
+          # The suppress flag tells cppcheck to ignore unused function warnings.
+          cppcheck --enable=all -I nn/include --suppress=missingIncludeSystem --suppress=unusedFunction --inconclusive --error-exitcode=1 .

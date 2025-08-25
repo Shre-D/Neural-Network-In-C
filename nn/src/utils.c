@@ -25,7 +25,7 @@ void log_message(LogLevel level, const char* format, ...) {
 
   // include time
   time_t now = time(NULL);
-  struct tm* t = localtime(&now);
+  const struct tm* t = localtime(&now);
   char time_str[20];
   strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", t);
 
