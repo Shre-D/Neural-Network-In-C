@@ -18,16 +18,15 @@ typedef struct _Matrix {
 // Functions for Matrix IO
 //=====================
 
-Matrix* read_matrix(char* fileName);
+Matrix* read_matrix(const char* fileName);
 Matrix* create_matrix(int rows, int cols);
 Matrix* copy_matrix(const Matrix* m);
 Matrix* flatten_matrix(Matrix* m, int axis);
 void fill_matrix(Matrix* m, double n);
-void randomize_matrix(Matrix* m);
+void randomize_matrix(Matrix* m, double n);
 void free_matrix(Matrix* m);
-void write_matrix(Matrix* m, char* filename);
+void write_matrix(Matrix* m,const char* filename);
 void print_matrix(Matrix* m);
-void save_matrix(Matrix* m);
 int matrix_argmax(Matrix* m);
 
 //============================
