@@ -18,7 +18,7 @@ typedef struct _Matrix {
 // Functions for Matrix IO
 //=====================
 
-Matrix* read_matrix(const char* fileName);
+Matrix* read_matrix(const char* filename);
 Matrix* create_matrix(int rows, int cols);
 Matrix* copy_matrix(const Matrix* m);
 Matrix* flatten_matrix(Matrix* m, int axis);

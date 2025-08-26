@@ -148,9 +148,14 @@ void randomize_matrix(Matrix* m, double n) {
 
 void free_matrix(Matrix* m) {
   LOG_INFO("Freeing matrix at address %p.", m);
-  free(m->matrix_data);
+  if (m == NULL) {
+    LOG_WARN("Attempted to free a NULL pointer.");
+    return;
+  }
+  if (m->matrix_data != NULL) {
+    free(m->matrix_data);
+  }
   free(m);
-  m = NULL;  // prevent dangling pointer
   LOG_INFO("Matrix freed successfully.");
 }
 
