@@ -7,6 +7,10 @@
 #include "linalg.h"
 #include "utils.h"
 
+//============================
+// Functions for Matrix IO
+//============================
+
 Matrix* read_matrix(const char* filename) {
   LOG_INFO("Attempting to load matrix from file: %s", filename);
 
