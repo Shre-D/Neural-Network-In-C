@@ -22,6 +22,7 @@ double binary_cross_entropy(const Matrix* y_hat, const Matrix* y);
 //==============================
 
 Matrix* mean_squared_error_gradient(const Matrix* y_hat, const Matrix* y);
-Matrix* categorical_cross_entropy_gradient(const Matrix* y_hat, const Matrix* y);
+Matrix* categorical_cross_entropy_gradient(const Matrix* y_hat,
+                                           const Matrix* y);
 Matrix* mean_absolute_error_gradient(const Matrix* y_hat, const Matrix* y);
 Matrix* binary_cross_entropy_gradient(const Matrix* y_hat, const Matrix* y);

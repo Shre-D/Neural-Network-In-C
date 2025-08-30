@@ -1,10 +1,11 @@
+#include "loss.h"
+
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "linalg.h"
-#include "loss.h"
 #include "utils.h"
 
 // A small value to prevent log(0) errors.
@@ -76,21 +77,25 @@ Matrix* mean_squared_error_gradient(const Matrix* y_hat, const Matrix* y) {
   int total_elements = y_hat->rows * y_hat->cols;
 
   for (int i = 0; i < total_elements; i++) {
-    gradient->matrix_data[i] = 2.0 * (y_hat->matrix_data[i] - y->matrix_data[i]);
+    gradient->matrix_data[i] =
+        2.0 * (y_hat->matrix_data[i] - y->matrix_data[i]);
   }
 
   return gradient;
 }
 
-Matrix* categorical_cross_entropy_gradient(const Matrix* y_hat, const Matrix* y) {
+Matrix* categorical_cross_entropy_gradient(const Matrix* y_hat,
+                                           const Matrix* y) {
   ASSERT(y_hat->rows == y->rows && y_hat->cols == y->cols,
-         "Categorical Cross-Entropy Gradient: Matrices must have matching dimensions.");
+         "Categorical Cross-Entropy Gradient: Matrices must have matching "
+         "dimensions.");
 
   Matrix* gradient = create_matrix(y_hat->rows, y_hat->cols);
   int total_elements = y_hat->rows * y_hat->cols;
 
   for (int i = 0; i < total_elements; i++) {
-    gradient->matrix_data[i] = -y->matrix_data[i] / (y_hat->matrix_data[i] + EPSILON);
+    gradient->matrix_data[i] =
+        -y->matrix_data[i] / (y_hat->matrix_data[i] + EPSILON);
   }
 
   return gradient;
@@ -117,15 +122,17 @@ Matrix* mean_absolute_error_gradient(const Matrix* y_hat, const Matrix* y) {
 }
 
 Matrix* binary_cross_entropy_gradient(const Matrix* y_hat, const Matrix* y) {
-  ASSERT(y_hat->rows == y->rows && y_hat->cols == y->cols,
-         "Binary Cross-Entropy Gradient: Matrices must have matching dimensions.");
+  ASSERT(
+      y_hat->rows == y->rows && y_hat->cols == y->cols,
+      "Binary Cross-Entropy Gradient: Matrices must have matching dimensions.");
 
   Matrix* gradient = create_matrix(y_hat->rows, y_hat->cols);
   int total_elements = y_hat->rows * y_hat->cols;
 
   for (int i = 0; i < total_elements; i++) {
-    gradient->matrix_data[i] = (y_hat->matrix_data[i] - y->matrix_data[i]) /
-                               (y_hat->matrix_data[i] * (1 - y_hat->matrix_data[i]) + EPSILON);
+    gradient->matrix_data[i] =
+        (y_hat->matrix_data[i] - y->matrix_data[i]) /
+        (y_hat->matrix_data[i] * (1 - y_hat->matrix_data[i]) + EPSILON);
   }
 
   return gradient;
