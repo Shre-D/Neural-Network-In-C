@@ -105,6 +105,8 @@ Matrix* tanh_prime(Matrix* m) {
 // Leaky ReLU Activation
 //============================
 
+// Without explicit definition, implemented in the functions below this
+// This will assume the alpha
 Matrix* leaky_relu(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
   LOG_INFO("Applying Leaky ReLU activation to a %dx%d matrix.", m->rows, m->cols);
@@ -115,7 +117,6 @@ Matrix* leaky_relu(Matrix* m) {
     if (m->matrix_data[i] > 0) {
       result->matrix_data[i] = m->matrix_data[i];
     } else {
-      // Common practice to use a small alpha, like 0.01
       result->matrix_data[i] = 0.01 * m->matrix_data[i];
     }
   }
@@ -135,6 +136,50 @@ Matrix* leaky_relu_prime(Matrix* m) {
       result->matrix_data[i] = 0.01;
     }
   }
+  return result;
+}
+
+// For when users may require more explicit defintions of alpha
+Matrix* leaky_relu_with_alpha(Matrix* m, double alpha) {
+  ASSERT(m != NULL, "Input matrix is NULL.");
+  // If I converted a non acceptable value of alpha into 0.01, it would bring in debug troubles.
+  ASSERT(alpha >= 0.0, "Alpha value must be non-negative.");
+
+  LOG_INFO(
+      "Applying Leaky ReLU with alpha=%.2f activation function to a %dx%d "
+      "matrix.",
+      alpha, m->rows, m->cols);
+
+  Matrix* result = create_matrix(m->rows, m->cols);
+  int total_elements = m->rows * m->cols;
+  for (int i = 0; i < total_elements; i++) {
+    if (m->matrix_data[i] > 0) {
+      result->matrix_data[i] = m->matrix_data[i];
+    } else {
+      result->matrix_data[i] = alpha * m->matrix_data[i];
+    }
+  }
+
+  return result;
+}
+
+Matrix* leaky_relu_prime_with_alpha(Matrix* m, double alpha) {
+  ASSERT(m != NULL, "Input matrix for leaky_relu_prime is NULL.");
+  ASSERT(alpha >= 0.0, "Alpha value must be non-negative.");
+  LOG_INFO(
+      "Applying Leaky ReLU with alpha=%.2f derivative to a %dx%d matrix.",
+      alpha, m->rows, m->cols);
+  Matrix* result = create_matrix(m->rows, m->cols);
+  int total_elements = m->rows * m->cols;
+
+  for (int i = 0; i < total_elements; i++) {
+    if (m->matrix_data[i] > 0) {
+      result->matrix_data[i] = 1.0;
+    } else {
+      result->matrix_data[i] = alpha;
+    }
+  }
+
   return result;
 }
 
@@ -180,7 +225,6 @@ Matrix* sign_prime(Matrix* m) {
 Matrix* identity_activation(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
   LOG_INFO("Applying Identity activation to a %dx%d matrix.", m->rows, m->cols);
-  // Simply return a copy of the input matrix as the output is identical
   return copy_matrix(m);
 }
 
