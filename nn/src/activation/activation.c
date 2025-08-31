@@ -1,9 +1,10 @@
+#include "activation.h"
+
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "activation.h"
 #include "linalg.h"
 #include "utils.h"
 
@@ -25,8 +26,9 @@ Matrix* sigmoid(Matrix* m) {
 
 Matrix* sigmoid_prime(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying sigmoid_prime activation to a %dx%d matrix.", m->rows, m->cols);
-  
+  LOG_INFO("Applying sigmoid_prime activation to a %dx%d matrix.", m->rows,
+           m->cols);
+
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
   for (int i = 0; i < total_elements; i++) {
@@ -58,7 +60,8 @@ Matrix* relu(Matrix* m) {
 
 Matrix* relu_prime(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying ReLU_prime activation to a %dx%d matrix.", m->rows, m->cols);
+  LOG_INFO("Applying ReLU_prime activation to a %dx%d matrix.", m->rows,
+           m->cols);
 
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
@@ -90,7 +93,8 @@ Matrix* tanh_activation(Matrix* m) {
 
 Matrix* tanh_prime(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying Tanh_prime activation to a %dx%d matrix.", m->rows, m->cols);
+  LOG_INFO("Applying Tanh_prime activation to a %dx%d matrix.", m->rows,
+           m->cols);
 
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
@@ -109,7 +113,8 @@ Matrix* tanh_prime(Matrix* m) {
 // This will assume the alpha
 Matrix* leaky_relu(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying Leaky ReLU activation to a %dx%d matrix.", m->rows, m->cols);
+  LOG_INFO("Applying Leaky ReLU activation to a %dx%d matrix.", m->rows,
+           m->cols);
 
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
@@ -125,7 +130,8 @@ Matrix* leaky_relu(Matrix* m) {
 
 Matrix* leaky_relu_prime(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying Leaky ReLU_prime activation to a %dx%d matrix.", m->rows, m->cols);
+  LOG_INFO("Applying Leaky ReLU_prime activation to a %dx%d matrix.", m->rows,
+           m->cols);
 
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
@@ -142,11 +148,13 @@ Matrix* leaky_relu_prime(Matrix* m) {
 // For when users may require more explicit defintions of alpha
 Matrix* leaky_relu_with_alpha(Matrix* m, double leak_parameter) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  // If I converted a non acceptable value of alpha into 0.01, it would bring in debug troubles.
+  // If I converted a non acceptable value of alpha into 0.01, it would bring in
+  // debug troubles.
   ASSERT(leak_parameter >= 0.0, "Alpha value must be non-negative.");
 
   LOG_INFO(
-      "Applying Leaky ReLU with leak_parameter=%.2f activation function to a %dx%d "
+      "Applying Leaky ReLU with leak_parameter=%.2f activation function to a "
+      "%dx%d "
       "matrix.",
       leak_parameter, m->rows, m->cols);
 
@@ -166,9 +174,8 @@ Matrix* leaky_relu_with_alpha(Matrix* m, double leak_parameter) {
 Matrix* leaky_relu_prime_with_alpha(Matrix* m, double leak_parameter) {
   ASSERT(m != NULL, "Input matrix for leaky_relu_prime is NULL.");
   ASSERT(leak_parameter >= 0.0, "Alpha value must be non-negative.");
-  LOG_INFO(
-      "Applying Leaky ReLU with alpha=%.2f derivative to a %dx%d matrix.",
-      leak_parameter, m->rows, m->cols);
+  LOG_INFO("Applying Leaky ReLU with alpha=%.2f derivative to a %dx%d matrix.",
+           leak_parameter, m->rows, m->cols);
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
 
@@ -207,9 +214,11 @@ Matrix* sign_activation(Matrix* m) {
 
 Matrix* sign_prime(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying Sign_prime activation to a %dx%d matrix.", m->rows, m->cols);
-  // The derivative of the sign function is 0 everywhere except at 0, where it is undefined.
-  // For backpropagation, the derivative is commonly approximated as 0.
+  LOG_INFO("Applying Sign_prime activation to a %dx%d matrix.", m->rows,
+           m->cols);
+  // The derivative of the sign function is 0 everywhere except at 0, where it
+  // is undefined. For backpropagation, the derivative is commonly approximated
+  // as 0.
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
   for (int i = 0; i < total_elements; i++) {
@@ -230,7 +239,8 @@ Matrix* identity_activation(Matrix* m) {
 
 Matrix* identity_prime(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying Identity_prime activation to a %dx%d matrix.", m->rows, m->cols);
+  LOG_INFO("Applying Identity_prime activation to a %dx%d matrix.", m->rows,
+           m->cols);
 
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
@@ -246,7 +256,8 @@ Matrix* identity_prime(Matrix* m) {
 
 Matrix* hard_tanh(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying Hard Tanh activation to a %dx%d matrix.", m->rows, m->cols);
+  LOG_INFO("Applying Hard Tanh activation to a %dx%d matrix.", m->rows,
+           m->cols);
 
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
@@ -264,8 +275,9 @@ Matrix* hard_tanh(Matrix* m) {
 
 Matrix* hard_tanh_prime(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying Hard Tanh_prime activation to a %dx%d matrix.", m->rows, m->cols);
-  
+  LOG_INFO("Applying Hard Tanh_prime activation to a %dx%d matrix.", m->rows,
+           m->cols);
+
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
   for (int i = 0; i < total_elements; i++) {
