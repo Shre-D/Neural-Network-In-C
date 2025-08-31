@@ -22,8 +22,8 @@ Matrix* leaky_relu(Matrix* m);
 Matrix* leaky_relu_prime(Matrix* m);
 
 // Allows the user to specify a custom alpha value
-Matrix* leaky_relu_with_alpha(Matrix* m, double alpha);
-Matrix* leaky_relu_prime_with_alpha(Matrix* m, double alpha);
+Matrix* leaky_relu_with_alpha(Matrix* m, double leak_parameter);
+Matrix* leaky_relu_prime_with_alpha(Matrix* m, double leak_parameter);
 
 Matrix* sign_activation(Matrix* m);
 Matrix* sign_prime(Matrix* m);

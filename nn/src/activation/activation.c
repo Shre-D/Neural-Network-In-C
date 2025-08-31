@@ -140,15 +140,15 @@ Matrix* leaky_relu_prime(Matrix* m) {
 }
 
 // For when users may require more explicit defintions of alpha
-Matrix* leaky_relu_with_alpha(Matrix* m, double alpha) {
+Matrix* leaky_relu_with_alpha(Matrix* m, double leak_parameter) {
   ASSERT(m != NULL, "Input matrix is NULL.");
   // If I converted a non acceptable value of alpha into 0.01, it would bring in debug troubles.
-  ASSERT(alpha >= 0.0, "Alpha value must be non-negative.");
+  ASSERT(leak_parameter >= 0.0, "Alpha value must be non-negative.");
 
   LOG_INFO(
-      "Applying Leaky ReLU with alpha=%.2f activation function to a %dx%d "
+      "Applying Leaky ReLU with leak_parameter=%.2f activation function to a %dx%d "
       "matrix.",
-      alpha, m->rows, m->cols);
+      leak_parameter, m->rows, m->cols);
 
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
@@ -156,19 +156,19 @@ Matrix* leaky_relu_with_alpha(Matrix* m, double alpha) {
     if (m->matrix_data[i] > 0) {
       result->matrix_data[i] = m->matrix_data[i];
     } else {
-      result->matrix_data[i] = alpha * m->matrix_data[i];
+      result->matrix_data[i] = leak_parameter * m->matrix_data[i];
     }
   }
 
   return result;
 }
 
-Matrix* leaky_relu_prime_with_alpha(Matrix* m, double alpha) {
+Matrix* leaky_relu_prime_with_alpha(Matrix* m, double leak_parameter) {
   ASSERT(m != NULL, "Input matrix for leaky_relu_prime is NULL.");
-  ASSERT(alpha >= 0.0, "Alpha value must be non-negative.");
+  ASSERT(leak_parameter >= 0.0, "Alpha value must be non-negative.");
   LOG_INFO(
       "Applying Leaky ReLU with alpha=%.2f derivative to a %dx%d matrix.",
-      alpha, m->rows, m->cols);
+      leak_parameter, m->rows, m->cols);
   Matrix* result = create_matrix(m->rows, m->cols);
   int total_elements = m->rows * m->cols;
 
@@ -176,7 +176,7 @@ Matrix* leaky_relu_prime_with_alpha(Matrix* m, double alpha) {
     if (m->matrix_data[i] > 0) {
       result->matrix_data[i] = 1.0;
     } else {
-      result->matrix_data[i] = alpha;
+      result->matrix_data[i] = leak_parameter;
     }
   }
 
