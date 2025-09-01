@@ -2,7 +2,8 @@
 
 #include "linalg.h"
 
-// Forward declaration of the internal cache struct to hide implementation details.
+// Forward declaration of the internal cache struct to hide implementation
+// details.
 typedef struct Cache Cache;
 
 // Initializes and allocates memory for a new cache.
