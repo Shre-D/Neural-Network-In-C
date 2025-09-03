@@ -30,10 +30,9 @@ typedef enum {
 #define CHECK_MALLOC(ptr, message) ASSERT((ptr) != NULL, message);
 
 // Macro to handle memory allocation checks.
-#define CHECK_ALLOC(ptr)                    \
-  if (ptr == NULL) {                        \
-    LOG_ERROR("Memory allocation failed."); \
-    return NULL;                            \
+#define CHECK_ALLOC(ptr) \
+  if (ptr == NULL) {     \
+    return NULL;         \
   }
 
 // Function prototypes for logging

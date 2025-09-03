@@ -10,10 +10,17 @@
 
 NeuralNetwork* create_network(int num_layers) {
   NeuralNetwork* nn = (NeuralNetwork*)malloc(sizeof(NeuralNetwork));
-  CHECK_ALLOC(nn);
+  if (nn == NULL) {
+    LOG_ERROR("Memory allocation failed for Neural Network struct.");
+    return NULL;
+  }
 
   nn->layers = (Layer**)malloc(sizeof(Layer*) * num_layers);
-  CHECK_ALLOC(nn->layers);
+  if (nn->layers == NULL) {
+    LOG_ERROR("Memory allocation failed for layers array.");
+    free(nn);
+    return NULL;
+  }
 
   nn->num_layers = num_layers;
   nn->cache = init_cache();
