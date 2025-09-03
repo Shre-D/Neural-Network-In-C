@@ -29,6 +29,12 @@ typedef enum {
 // For safe malloc allocations
 #define CHECK_MALLOC(ptr, message) ASSERT((ptr) != NULL, message);
 
+// Macro to handle memory allocation checks.
+#define CHECK_ALLOC(ptr) \
+  if (ptr == NULL) {     \
+    return NULL;         \
+  }
+
 // Function prototypes for logging
 void log_message(LogLevel level, const char* format, ...);
 
