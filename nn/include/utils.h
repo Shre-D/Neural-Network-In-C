@@ -35,7 +35,7 @@ typedef enum {
     LOG_ERROR("Memory allocation failed."); \
     return NULL;                            \
   }
-  
+
 // Function prototypes for logging
 void log_message(LogLevel level, const char* format, ...);
 
