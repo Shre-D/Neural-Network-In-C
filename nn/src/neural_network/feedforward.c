@@ -8,13 +8,6 @@
 #include "neural_network.h"
 #include "utils.h"
 
-// Macro to handle memory allocation checks.
-#define CHECK_ALLOC(ptr)                    \
-  if (ptr == NULL) {                        \
-    LOG_ERROR("Memory allocation failed."); \
-    return NULL;                            \
-  }
-
 NeuralNetwork* create_network(int num_layers) {
   NeuralNetwork* nn = (NeuralNetwork*)malloc(sizeof(NeuralNetwork));
   CHECK_ALLOC(nn);
@@ -73,7 +66,6 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
   for (int i = 0; i < nn->num_layers; i++) {
     Matrix* z = dot_matrix(current_output, nn->layers[i]->weights);
 
-    // Add bias
     add_matrix(z, nn->layers[i]->bias);
 
     // Cache the intermediate value (z).
@@ -88,7 +80,7 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
     sprintf(a_key, "a_%d", i);
     put_matrix(nn->cache, a_key, a);
 
-    free_matrix(z);  // We no longer need z, as we have cached it.
+    free_matrix(z);
     free_matrix(current_output);
     current_output = a;
   }
