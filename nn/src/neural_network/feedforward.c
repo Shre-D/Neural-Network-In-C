@@ -67,7 +67,6 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
 
   Matrix* current_output = copy_matrix(input);
 
-  // Cache the input for the backpropagation algorithm.
   put_matrix(nn->cache, "input", current_output);
 
   for (int i = 0; i < nn->num_layers; i++) {
@@ -82,7 +81,6 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
 
     Matrix* a = apply_onto_matrix(nn->layers[i]->activation, z);
 
-    // Cache the activated output (a).
     char a_key[32];
     sprintf(a_key, "a_%d", i);
     put_matrix(nn->cache, a_key, a);
