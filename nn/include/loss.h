@@ -3,10 +3,23 @@
 #include "linalg.h"
 #include "utils.h"
 
-//==============================
-// My first loss function library
-// I'm going to define common loss functions and their gradients here
-//==============================
+typedef enum {
+  MSE,  // Mean Squared Error
+  CCE,  // Categorical Cross-Entropy
+  MAE,  // Mean Absolute Error
+  BCE,  // Binary Cross-Entropy
+} LossFunctionType;
+
+typedef enum {
+  MSE_GRAD,  // Mean Squared Error Gradient
+  CCE_GRAD,  // Categorical Cross-Entropy Gradient
+  MAE_GRAD,  // Mean Absolute Error Gradient
+  BCE_GRAD,  // Binary Cross-Entropy Gradient
+} LossFunctionGradType;
+
+typedef double (*LossFunction)(const Matrix* y_hat, const Matrix* y);
+
+typedef Matrix* (*LossFunctionGrad)(const Matrix* y_hat, const Matrix* y);
 
 //=====================
 // Loss Functions

@@ -11,6 +11,38 @@
 // A small value to prevent log(0) errors.
 #define EPSILON 1e-15
 
+LossFunction get_loss_function(LossFunctionType type) {
+  switch (type) {
+    case MSE:
+      return mean_squared_error;
+    case CCE:
+      return categorical_cross_entropy;
+    case MAE:
+      return mean_absolute_error;
+    case BCE:
+      return binary_cross_entropy;
+    default:
+      LOG_ERROR("Unknown loss function type.");
+      return NULL;
+  }
+}
+
+LossFunctionGrad get_loss_gradient(LossFunctionGradType type) {
+  switch (type) {
+    case MSE_GRAD:
+      return mean_squared_error_gradient;
+    case CCE_GRAD:
+      return categorical_cross_entropy_gradient;
+    case MAE_GRAD:
+      return mean_absolute_error_gradient;
+    case BCE_GRAD:
+      return binary_cross_entropy_gradient;
+    default:
+      LOG_ERROR("Unknown loss gradient type.");
+      return NULL;
+  }
+}
+
 double mean_squared_error(const Matrix* y_hat, const Matrix* y) {
   ASSERT(y_hat->rows == y->rows && y_hat->cols == y->cols,
          "MSE: Matrices must have matching dimensions.");
