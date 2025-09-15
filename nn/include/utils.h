@@ -5,6 +5,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+/**
+ * @file utils.h
+ * @brief Logging and assertion utilities used across modules.
+ */
+
 // Set up log levels
 typedef enum {
   LOG_LEVEL_DEBUG,

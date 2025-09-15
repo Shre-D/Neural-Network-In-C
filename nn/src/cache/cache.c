@@ -1,3 +1,7 @@
+/**
+ * @file cache.c
+ * @brief Internal hashmap-based cache for matrices.
+ */
 #include "cache.h"
 
 #include <stdio.h>

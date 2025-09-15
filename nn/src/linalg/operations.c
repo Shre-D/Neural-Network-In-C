@@ -1,3 +1,11 @@
+/**
+ * @file operations.c
+ * @brief Linear algebra operations over the Matrix type.
+ *
+ * Provides identity, elementwise arithmetic, apply, dot product, transpose,
+ * and scaling. Functions return newly allocated matrices; callers must free
+ * results with free_matrix.
+ */
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>

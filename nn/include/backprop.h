@@ -3,17 +3,29 @@
 #include "loss.h"
 #include "neural_network.h"
 
+/**
+ * @file backprop.h
+ * @brief Backpropagation and gradient computation APIs.
+ */
+
 //============================
 // Functions for Backpropagation
 //============================
 
+/**
+ * @brief Compute layer-wise deltas and cache them for gradient evaluation.
+ * @param nn Pointer to network.
+ * @param y_true Ground-truth labels/targets.
+ * @param loss_func Loss function (optional here; for monitoring).
+ * @param loss_func_grad Gradient of loss w.r.t predictions (required).
+ */
 void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
                    LossFunction loss_func, LossFunctionGrad loss_func_grad);
 
-// Calculates the gradient of a single layer's weights.
+/** @brief Calculate weight gradient for a specific layer. */
 Matrix* calculate_weight_gradient(const Cache* cache, int layer_index,
                                   int total_layers);
 
-// Calculates the gradient of a single layer's bias.
+/** @brief Calculate bias gradient for a specific layer. */
 Matrix* calculate_bias_gradient(const Cache* cache, int layer_index,
                                 int total_layers);

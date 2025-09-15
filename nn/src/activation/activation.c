@@ -1,3 +1,11 @@
+/**
+ * @file activation.c
+ * @brief Implementations of activation functions and their derivatives.
+ *
+ * Elementwise activations used in forward passes and their corresponding
+ * derivatives used in backpropagation. All functions allocate new matrices;
+ * callers are responsible for freeing returned results.
+ */
 #include "activation.h"
 
 #include <limits.h>

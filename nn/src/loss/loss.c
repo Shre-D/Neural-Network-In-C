@@ -1,3 +1,7 @@
+/**
+ * @file loss.c
+ * @brief Implementations of loss functions and their gradients.
+ */
 #include "loss.h"
 
 #include <limits.h>

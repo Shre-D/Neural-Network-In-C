@@ -1,3 +1,7 @@
+/**
+ * @file io.c
+ * @brief Matrix input/output utilities and helpers.
+ */
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>

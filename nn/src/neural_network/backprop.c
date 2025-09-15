@@ -1,3 +1,7 @@
+/**
+ * @file backprop.c
+ * @brief Backpropagation implementation and gradient helpers.
+ */
 #include "backprop.h"
 
 #include <stdio.h>

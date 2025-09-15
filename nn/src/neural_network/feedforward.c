@@ -1,3 +1,7 @@
+/**
+ * @file feedforward.c
+ * @brief Network allocation and forward pass with caching of intermediates.
+ */
 #include "feedforward.h"
 
 #include <stdio.h>
