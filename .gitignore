@@ -1,2 +1,5 @@
 .vscode
 build
+
+# Doxygen output
+docs/api/
