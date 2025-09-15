@@ -22,7 +22,8 @@
 
 Matrix* sigmoid(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying sigmoid activation to a %zux%zu matrix.", m->rows, m->cols);
+  LOG_INFO("Applying sigmoid activation to a %zux%zu matrix.", m->rows,
+           m->cols);
 
   Matrix* result = create_matrix(m->rows, m->cols);
   size_t total_elements = m->rows * m->cols;
@@ -182,8 +183,9 @@ Matrix* leaky_relu_with_alpha(Matrix* m, double leak_parameter) {
 Matrix* leaky_relu_prime_with_alpha(Matrix* m, double leak_parameter) {
   ASSERT(m != NULL, "Input matrix for leaky_relu_prime is NULL.");
   ASSERT(leak_parameter >= 0.0, "Alpha value must be non-negative.");
-  LOG_INFO("Applying Leaky ReLU with alpha=%.2f derivative to a %zux%zu matrix.",
-           leak_parameter, m->rows, m->cols);
+  LOG_INFO(
+      "Applying Leaky ReLU with alpha=%.2f derivative to a %zux%zu matrix.",
+      leak_parameter, m->rows, m->cols);
   Matrix* result = create_matrix(m->rows, m->cols);
   size_t total_elements = m->rows * m->cols;
 
@@ -241,7 +243,8 @@ Matrix* sign_prime(Matrix* m) {
 
 Matrix* identity_activation(Matrix* m) {
   ASSERT(m != NULL, "Input matrix is NULL.");
-  LOG_INFO("Applying Identity activation to a %zux%zu matrix.", m->rows, m->cols);
+  LOG_INFO("Applying Identity activation to a %zux%zu matrix.", m->rows,
+           m->cols);
   return copy_matrix(m);
 }
 

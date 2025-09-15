@@ -12,7 +12,7 @@
 #include "utils.h"
 
 //============================
-// Functions for Matrix IO  
+// Functions for Matrix IO
 //============================
 
 Matrix* read_matrix(const char* filename) {
@@ -129,7 +129,8 @@ Matrix* flatten_matrix(Matrix* m, int axis) {
 
 void fill_matrix(Matrix* m, double n) {
   ASSERT(m != NULL, "Input matrix for fill_matrix is NULL.");
-  LOG_INFO("Filling a %zux%zu matrix with the value %.2f.", m->rows, m->cols, n);
+  LOG_INFO("Filling a %zux%zu matrix with the value %.2f.", m->rows, m->cols,
+           n);
 
   for (size_t i = 0; i < m->rows; i++) {
     for (size_t j = 0; j < m->cols; j++) {
