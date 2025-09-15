@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stddef.h>
+
 /**
  * @file linalg.h
  * @brief Matrix data structure and linear algebra primitives.
@@ -20,8 +22,8 @@
 // 1D array used, this is way more performant than a 2D array is
 typedef struct _Matrix {
   double* matrix_data;
-  int rows;
-  int cols;
+  size_t rows;
+  size_t cols;
 } Matrix;
 
 //==============================
@@ -35,7 +37,7 @@ typedef struct _Matrix {
 /** @brief Read a matrix from a text file. */
 Matrix* read_matrix(const char* filename);
 /** @brief Create an uninitialized matrix with given shape. */
-Matrix* create_matrix(int rows, int cols);
+Matrix* create_matrix(size_t rows, size_t cols);
 /** @brief Deep copy a matrix. */
 Matrix* copy_matrix(const Matrix* m);
 /** @brief Flatten a matrix along an axis (implementation-specific). */
@@ -57,7 +59,7 @@ int matrix_argmax(Matrix* m);
 // Matrix Operations
 //============================
 /** @brief Create an identity matrix of size n×n. */
-Matrix* identity_matrix(int n);
+Matrix* identity_matrix(size_t n);
 /** @brief Elementwise addition: result = a + b. */
 Matrix* add_matrix(Matrix* a, Matrix* b);
 /** @brief Elementwise subtraction: result = a - b. */

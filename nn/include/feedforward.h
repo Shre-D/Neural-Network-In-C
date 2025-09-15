@@ -12,7 +12,7 @@
 //==============================
 
 /** @brief Allocate and initialize a network with `num_layers` slots. */
-NeuralNetwork* create_network(int num_layers);
+NeuralNetwork* create_network(size_t num_layers);
 
 /** @brief Free a network and its associated resources. */
 void free_network(NeuralNetwork* nn);

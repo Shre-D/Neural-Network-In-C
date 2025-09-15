@@ -38,7 +38,7 @@ typedef struct {
  */
 typedef struct {
   Layer** layers; /**< Array of layer pointers (length = num_layers). */
-  int num_layers; /**< Number of layers. */
+  size_t num_layers; /**< Number of layers. */
 
   /** Caches intermediate forward/backward values. */
   Cache* cache;

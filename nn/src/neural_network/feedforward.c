@@ -12,7 +12,7 @@
 #include "neural_network.h"
 #include "utils.h"
 
-NeuralNetwork* create_network(int num_layers) {
+NeuralNetwork* create_network(size_t num_layers) {
   NeuralNetwork* nn = (NeuralNetwork*)malloc(sizeof(NeuralNetwork));
   if (nn == NULL) {
     LOG_ERROR("Memory allocation failed for Neural Network struct.");
@@ -43,7 +43,7 @@ void free_network(NeuralNetwork* nn) {
   }
 
   if (nn->layers != NULL) {
-    for (int i = 0; i < nn->num_layers; i++) {
+    for (size_t i = 0; i < nn->num_layers; i++) {
       if (nn->layers[i] != NULL) {
         if (nn->layers[i]->weights != NULL) {
           free_matrix(nn->layers[i]->weights);
@@ -73,7 +73,7 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
 
   put_matrix(nn->cache, "input", current_output);
 
-  for (int i = 0; i < nn->num_layers; i++) {
+  for (size_t i = 0; i < nn->num_layers; i++) {
     Matrix* z_linear = dot_matrix(current_output, nn->layers[i]->weights);
     // Bias add returns a new matrix; capture it to avoid dropping the result.
     Matrix* z = add_matrix(z_linear, nn->layers[i]->bias);
