@@ -4,6 +4,7 @@
  */
 #include "backprop.h"
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -56,11 +57,11 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
   ASSERT(y_true != NULL, "Ground truth matrix cannot be NULL.");
   ASSERT(loss_func_grad != NULL, "Loss gradient function cannot be NULL.");
 
-  int last_index = nn->num_layers - 1;
+  size_t last_index = nn->num_layers - 1;
 
   // Get y_hat from cache (activation of last layer)
   char a_last_key[32];
-  sprintf(a_last_key, "a_%d", last_index);
+  sprintf(a_last_key, "a_%zu", last_index);
   Matrix* y_hat = get_matrix(nn->cache, a_last_key);
   ASSERT(y_hat != NULL, "Cached prediction (y_hat) not found.");
 
@@ -70,7 +71,7 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
 
   // delta for output layer: dL/dz = dL/da .* a'(z)
   char z_last_key[32];
-  sprintf(z_last_key, "z_%d", last_index);
+  sprintf(z_last_key, "z_%zu", last_index);
   Matrix* z_last = get_matrix(nn->cache, z_last_key);
   ASSERT(z_last != NULL, "Cached z for last layer not found.");
 
@@ -80,7 +81,7 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
   ASSERT(delta_last != NULL, "Failed to compute delta for last layer.");
 
   char delta_last_key[32];
-  sprintf(delta_last_key, "delta_%d", last_index);
+  sprintf(delta_last_key, "delta_%zu", last_index);
   put_matrix(nn->cache, delta_last_key, delta_last);
 
   // Clean up temporaries for last layer
@@ -91,10 +92,10 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
   free_matrix(delta_last);
 
   // Backpropagate through hidden layers
-  for (int i = last_index - 1; i >= 0; i--) {
+  for (size_t i = last_index - 1; i != SIZE_MAX; i--) {
     // delta_{i} = (delta_{i+1} dot W_{i+1}^T) .* a'_i(z_i)
     char delta_next_key[32];
-    sprintf(delta_next_key, "delta_%d", i + 1);
+    sprintf(delta_next_key, "delta_%zu", i + 1);
     Matrix* delta_next = get_matrix(nn->cache, delta_next_key);
     ASSERT(delta_next != NULL, "Cached delta for next layer not found.");
 
@@ -105,7 +106,7 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
     Matrix* propagated = dot_matrix(delta_next, W_next_T);
 
     char z_key[32];
-    sprintf(z_key, "z_%d", i);
+    sprintf(z_key, "z_%zu", i);
     Matrix* z_i = get_matrix(nn->cache, z_key);
     ASSERT(z_i != NULL, "Cached z for layer not found.");
     Matrix* act_prime_i = activation_derivative_for_layer(nn->layers[i], z_i);
@@ -114,7 +115,7 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
     ASSERT(delta_i != NULL, "Failed to compute delta for layer.");
 
     char delta_i_key[32];
-    sprintf(delta_i_key, "delta_%d", i);
+    sprintf(delta_i_key, "delta_%zu", i);
     put_matrix(nn->cache, delta_i_key, delta_i);
 
     // Clean up
@@ -127,11 +128,10 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
   }
 }
 
-Matrix* calculate_weight_gradient(const Cache* cache, int layer_index,
-                                  int total_layers) {
+Matrix* calculate_weight_gradient(const Cache* cache, size_t layer_index,
+                                  size_t total_layers) {
   ASSERT(cache != NULL, "Cache cannot be NULL.");
-  ASSERT(layer_index >= 0 && layer_index < total_layers,
-         "layer_index out of bounds.");
+  ASSERT(layer_index < total_layers, "layer_index out of bounds.");
 
   // Get activation of previous layer (or input)
   Matrix* a_prev = NULL;
@@ -139,14 +139,14 @@ Matrix* calculate_weight_gradient(const Cache* cache, int layer_index,
     a_prev = get_matrix((Cache*)cache, "input");
   } else {
     char a_prev_key[32];
-    sprintf(a_prev_key, "a_%d", layer_index - 1);
+    sprintf(a_prev_key, "a_%zu", layer_index - 1);
     a_prev = get_matrix((Cache*)cache, a_prev_key);
   }
   ASSERT(a_prev != NULL, "Cached previous activation/input not found.");
 
   // Get delta for current layer
   char delta_key[32];
-  sprintf(delta_key, "delta_%d", layer_index);
+  sprintf(delta_key, "delta_%zu", layer_index);
   Matrix* delta_i = get_matrix((Cache*)cache, delta_key);
   ASSERT(delta_i != NULL, "Cached delta for layer not found.");
 
@@ -161,14 +161,13 @@ Matrix* calculate_weight_gradient(const Cache* cache, int layer_index,
   return grad_W;
 }
 
-Matrix* calculate_bias_gradient(const Cache* cache, int layer_index,
-                                int total_layers) {
+Matrix* calculate_bias_gradient(const Cache* cache, size_t layer_index,
+                                size_t total_layers) {
   ASSERT(cache != NULL, "Cache cannot be NULL.");
-  ASSERT(layer_index >= 0 && layer_index < total_layers,
-         "layer_index out of bounds.");
+  ASSERT(layer_index < total_layers, "layer_index out of bounds.");
 
   char delta_key[32];
-  sprintf(delta_key, "delta_%d", layer_index);
+  sprintf(delta_key, "delta_%zu", layer_index);
   Matrix* delta_i = get_matrix((Cache*)cache, delta_key);
   ASSERT(delta_i != NULL, "Cached delta for layer not found.");
 

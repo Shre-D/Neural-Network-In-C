@@ -23,9 +23,9 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
                    LossFunction loss_func, LossFunctionGrad loss_func_grad);
 
 /** @brief Calculate weight gradient for a specific layer. */
-Matrix* calculate_weight_gradient(const Cache* cache, int layer_index,
-                                  int total_layers);
+Matrix* calculate_weight_gradient(const Cache* cache, size_t layer_index,
+                                  size_t total_layers);
 
 /** @brief Calculate bias gradient for a specific layer. */
-Matrix* calculate_bias_gradient(const Cache* cache, int layer_index,
-                                int total_layers);
+Matrix* calculate_bias_gradient(const Cache* cache, size_t layer_index,
+                                size_t total_layers);
