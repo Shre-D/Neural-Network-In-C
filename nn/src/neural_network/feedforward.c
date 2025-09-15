@@ -80,7 +80,7 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
 
     // Cache the intermediate pre-activation value (z).
     char z_key[32];
-    sprintf(z_key, "z_%d", i);
+    sprintf(z_key, "z_%zu", i);
     put_matrix(nn->cache, z_key, z);
 
     Matrix* a = NULL;
@@ -92,7 +92,7 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
     }
 
     char a_key[32];
-    sprintf(a_key, "a_%d", i);
+    sprintf(a_key, "a_%zu", i);
     put_matrix(nn->cache, a_key, a);
 
     free_matrix(z_linear);
