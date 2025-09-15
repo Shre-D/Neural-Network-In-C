@@ -45,8 +45,8 @@ static Matrix* activation_derivative_for_layer(const Layer* layer, Matrix* z) {
   return identity_prime(z);
 }
 
-void backpropagate(NeuralNetwork* nn, const Matrix* y_true, LossFunction loss_func,
-                   LossFunctionGrad loss_func_grad) {
+void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
+                   LossFunction loss_func, LossFunctionGrad loss_func_grad) {
   ASSERT(nn != NULL, "Neural Network pointer cannot be NULL.");
   ASSERT(nn->cache != NULL, "Cache cannot be NULL.");
   ASSERT(y_true != NULL, "Ground truth matrix cannot be NULL.");
@@ -70,7 +70,8 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true, LossFunction loss_fu
   Matrix* z_last = get_matrix(nn->cache, z_last_key);
   ASSERT(z_last != NULL, "Cached z for last layer not found.");
 
-  Matrix* act_prime_last = activation_derivative_for_layer(nn->layers[last_index], z_last);
+  Matrix* act_prime_last =
+      activation_derivative_for_layer(nn->layers[last_index], z_last);
   Matrix* delta_last = multiply_matrix(dL_da, act_prime_last);
   ASSERT(delta_last != NULL, "Failed to compute delta for last layer.");
 
@@ -122,7 +123,8 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true, LossFunction loss_fu
   }
 }
 
-Matrix* calculate_weight_gradient(const Cache* cache, int layer_index, int total_layers) {
+Matrix* calculate_weight_gradient(const Cache* cache, int layer_index,
+                                  int total_layers) {
   ASSERT(cache != NULL, "Cache cannot be NULL.");
   ASSERT(layer_index >= 0 && layer_index < total_layers,
          "layer_index out of bounds.");
@@ -155,7 +157,8 @@ Matrix* calculate_weight_gradient(const Cache* cache, int layer_index, int total
   return grad_W;
 }
 
-Matrix* calculate_bias_gradient(const Cache* cache, int layer_index, int total_layers) {
+Matrix* calculate_bias_gradient(const Cache* cache, int layer_index,
+                                int total_layers) {
   ASSERT(cache != NULL, "Cache cannot be NULL.");
   ASSERT(layer_index >= 0 && layer_index < total_layers,
          "layer_index out of bounds.");
@@ -168,5 +171,3 @@ Matrix* calculate_bias_gradient(const Cache* cache, int layer_index, int total_l
   // For single-sample case, bias gradient equals delta
   return delta_i;  // already a deep copy from cache
 }
-
-
