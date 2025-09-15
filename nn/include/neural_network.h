@@ -37,7 +37,7 @@ typedef struct {
  * @brief Neural network composed of sequential fully connected layers.
  */
 typedef struct {
-  Layer** layers; /**< Array of layer pointers (length = num_layers). */
+  Layer** layers;    /**< Array of layer pointers (length = num_layers). */
   size_t num_layers; /**< Number of layers. */
 
   /** Caches intermediate forward/backward values. */
