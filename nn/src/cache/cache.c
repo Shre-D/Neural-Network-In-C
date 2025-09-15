@@ -42,7 +42,7 @@ static unsigned int hash(const char* key) {
 // Cache Functions
 //------------------------------
 
-Cache* init_cache() {
+Cache* create_cache() {
   Cache* cache = (Cache*)malloc(sizeof(Cache));
   if (cache == NULL) {
     return NULL;
@@ -54,7 +54,7 @@ Cache* init_cache() {
   return cache;
 }
 
-void put_matrix(Cache* cache, const char* key, const Matrix* m) {
+void cache_put(Cache* cache, const char* key, const Matrix* m) {
   if (cache == NULL || key == NULL || m == NULL) {
     return;
   }
@@ -82,7 +82,7 @@ void put_matrix(Cache* cache, const char* key, const Matrix* m) {
   cache->entries[index] = new_entry;
 }
 
-Matrix* get_matrix(Cache* cache, const char* key) {
+Matrix* cache_get(Cache* cache, const char* key) {
   if (cache == NULL || key == NULL) {
     return NULL;
   }
@@ -110,6 +110,14 @@ void clear_cache(Cache* cache) {
       free_matrix(to_free->m);
       free(to_free);
     }
+    cache->entries[i] = NULL;
   }
+}
+
+void free_cache(Cache* cache) {
+  if (cache == NULL) {
+    return;
+  }
+  clear_cache(cache);
   free(cache);
 }
