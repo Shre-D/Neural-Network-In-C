@@ -30,7 +30,7 @@ static unsigned int hash(const char* key) {
   // not the most secure, but I'll look into a better hash function
   // later.
   unsigned long long hash = 0;
-  int i = 0;
+  size_t i = 0;
   while (key[i] != '\0') {
     hash = hash * 31 + key[i];
     i++;
@@ -48,7 +48,7 @@ Cache* create_cache() {
     return NULL;
   }
 
-  for (int i = 0; i < HASH_MAP_SIZE; i++) {
+  for (size_t i = 0; i < HASH_MAP_SIZE; i++) {
     cache->entries[i] = NULL;
   }
   return cache;
@@ -101,7 +101,7 @@ void clear_cache(Cache* cache) {
   if (cache == NULL) {
     return;
   }
-  for (int i = 0; i < HASH_MAP_SIZE; i++) {
+  for (size_t i = 0; i < HASH_MAP_SIZE; i++) {
     CacheEntry* current = cache->entries[i];
     while (current != NULL) {
       CacheEntry* to_free = current;

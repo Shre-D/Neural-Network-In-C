@@ -22,7 +22,7 @@ Matrix* read_matrix(const char* filename) {
   ASSERT(file != NULL, "Failed to open file for matrix loading.");
 
   char entry[1024];
-  int rows = 0, cols = 0;
+  size_t rows = 0, cols = 0;
 
   if (fgets(entry, sizeof(entry), file) == NULL) {
     LOG_ERROR("Could not read rows from file: %s", filename);
@@ -42,7 +42,7 @@ Matrix* read_matrix(const char* filename) {
 
   Matrix* m = create_matrix(rows, cols);
 
-  for (int i = 0; i < rows; i++) {
+  for (size_t i = 0; i < rows; i++) {
     if (fgets(entry, sizeof(entry), file) == NULL) {
       LOG_ERROR("Unexpected end of file while reading matrix data.");
       free_matrix(m);
@@ -51,19 +51,19 @@ Matrix* read_matrix(const char* filename) {
     }
 
     char* line_ptr = entry;
-    for (int j = 0; j < cols; j++) {
+    for (size_t j = 0; j < cols; j++) {
       m->matrix_data[i * cols + j] = strtod(line_ptr, &line_ptr);
     }
   }
 
-  LOG_INFO("Successfully loaded a %dx%d matrix from %s.", m->rows, m->cols,
+  LOG_INFO("Successfully loaded a %zux%zu matrix from %s.", m->rows, m->cols,
            filename);
   fclose(file);
   return m;
 }
 
-Matrix* create_matrix(int rows, int cols) {
-  LOG_INFO("Creating a new matrix of size %dx%d.", rows, cols);
+Matrix* create_matrix(size_t rows, size_t cols) {
+  LOG_INFO("Creating a new matrix of size %zux%zu.", rows, cols);
 
   Matrix* matrix = (Matrix*)malloc(sizeof(Matrix));
   CHECK_MALLOC(matrix, "Failed to allocate memory for Matrix struct.");
@@ -83,7 +83,7 @@ Matrix* create_matrix(int rows, int cols) {
 Matrix* copy_matrix(const Matrix* m) {
   ASSERT(m != NULL, "Input matrix for copy is NULL.");
 
-  LOG_INFO("Copying a %dx%d matrix.", m->rows, m->cols);
+  LOG_INFO("Copying a %zux%zu matrix.", m->rows, m->cols);
   Matrix* new_matrix = create_matrix(m->rows, m->cols);
 
   size_t total_bytes = m->rows * m->cols * sizeof(double);
@@ -98,9 +98,9 @@ Matrix* copy_matrix(const Matrix* m) {
 Matrix* flatten_column_wise(const Matrix* m) {
   Matrix* new_matrix = create_matrix(m->rows * m->cols, 1);
 
-  int k = 0;
-  for (int j = 0; j < m->cols; j++) {
-    for (int i = 0; i < m->rows; i++) {
+  size_t k = 0;
+  for (size_t j = 0; j < m->cols; j++) {
+    for (size_t i = 0; i < m->rows; i++) {
       new_matrix->matrix_data[k] = m->matrix_data[i * m->cols + j];
       k++;
     }
@@ -129,24 +129,25 @@ Matrix* flatten_matrix(Matrix* m, int axis) {
 
 void fill_matrix(Matrix* m, double n) {
   ASSERT(m != NULL, "Input matrix for fill_matrix is NULL.");
-  LOG_INFO("Filling a %dx%d matrix with the value %.2f.", m->rows, m->cols, n);
+  LOG_INFO("Filling a %zux%zu matrix with the value %.2f.", m->rows, m->cols,
+           n);
 
-  for (int i = 0; i < m->rows; i++) {
-    for (int j = 0; j < m->cols; j++) {
+  for (size_t i = 0; i < m->rows; i++) {
+    for (size_t j = 0; j < m->cols; j++) {
       m->matrix_data[i * m->cols + j] = n;
     }
   }
 }
 
 void randomize_matrix(Matrix* m, double n) {
-  LOG_INFO("Randomizing a %dx%d matrix.", m->rows, m->cols);
+  LOG_INFO("Randomizing a %zux%zu matrix.", m->rows, m->cols);
   // Apparently a 1/n or 1/n^2 scaling leads to a vanishing gradient problem
   double min = -1.0 / sqrt(n);
   double max = 1.0 / sqrt(n);
   double range = max - min;
 
-  for (int i = 0; i < m->rows; i++) {
-    for (int j = 0; j < m->cols; j++) {
+  for (size_t i = 0; i < m->rows; i++) {
+    for (size_t j = 0; j < m->cols; j++) {
       double random_value = (double)rand() / (double)RAND_MAX;
       m->matrix_data[i * m->cols + j] = min + random_value * range;
     }
@@ -169,9 +170,9 @@ void free_matrix(Matrix* m) {
 
 void print_matrix(Matrix* m) {
   ASSERT(m != NULL, "Input matrix for print is NULL.");
-  LOG_INFO("Printing matrix of size %dx%d.", m->rows, m->cols);
-  for (int i = 0; i < m->rows; i++) {
-    for (int j = 0; j < m->cols; j++) {
+  LOG_INFO("Printing matrix of size %zux%zu.", m->rows, m->cols);
+  for (size_t i = 0; i < m->rows; i++) {
+    for (size_t j = 0; j < m->cols; j++) {
       printf("%.3f ", m->matrix_data[i * m->cols + j]);
     }
     printf("\n");
@@ -180,16 +181,16 @@ void print_matrix(Matrix* m) {
 
 void write_matrix(Matrix* m, const char* filename) {
   ASSERT(m != NULL, "Input matrix for save is NULL.");
-  LOG_INFO("Saving a %dx%d matrix to file: %s", m->rows, m->cols, filename);
+  LOG_INFO("Saving a %zux%zu matrix to file: %s", m->rows, m->cols, filename);
 
   FILE* file = fopen(filename, "w");
   ASSERT(file != NULL, "Failed to open file for saving matrix.");
 
-  fprintf(file, "%d\n", m->rows);
-  fprintf(file, "%d\n", m->cols);
+  fprintf(file, "%zu\n", m->rows);
+  fprintf(file, "%zu\n", m->cols);
 
-  for (int i = 0; i < m->rows; i++) {
-    for (int j = 0; j < m->cols; j++) {
+  for (size_t i = 0; i < m->rows; i++) {
+    for (size_t j = 0; j < m->cols; j++) {
       fprintf(file, "%.3f ", m->matrix_data[i * m->cols + j]);
     }
     fprintf(file, "\n");
@@ -206,9 +207,9 @@ int matrix_argmax(Matrix* m) {
   double maxValue = INT_MIN;
   int maxIndex = 0;
 
-  for (int i = 0; i < m->rows; i++) {
+  for (size_t i = 0; i < m->rows; i++) {
     if (m->matrix_data[i] > maxValue) {
-      maxIndex = i;
+      maxIndex = (int)i;
       maxValue = m->matrix_data[i];
     }
   }

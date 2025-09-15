@@ -4,6 +4,7 @@
  */
 #include "backprop.h"
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -56,7 +57,7 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
   ASSERT(y_true != NULL, "Ground truth matrix cannot be NULL.");
   ASSERT(loss_func_grad != NULL, "Loss gradient function cannot be NULL.");
 
-  int last_index = nn->num_layers - 1;
+  size_t last_index = nn->num_layers - 1;
 
   // Get y_hat from cache (activation of last layer)
   char a_last_key[32];
@@ -91,7 +92,7 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
   free_matrix(delta_last);
 
   // Backpropagate through hidden layers
-  for (int i = last_index - 1; i >= 0; i--) {
+  for (size_t i = last_index - 1; i != SIZE_MAX; i--) {
     // delta_{i} = (delta_{i+1} dot W_{i+1}^T) .* a'_i(z_i)
     char delta_next_key[32];
     sprintf(delta_next_key, "delta_%zu", i + 1);
@@ -127,11 +128,10 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
   }
 }
 
-Matrix* calculate_weight_gradient(const Cache* cache, int layer_index,
-                                  int total_layers) {
+Matrix* calculate_weight_gradient(const Cache* cache, size_t layer_index,
+                                  size_t total_layers) {
   ASSERT(cache != NULL, "Cache cannot be NULL.");
-  ASSERT(layer_index >= 0 && layer_index < total_layers,
-         "layer_index out of bounds.");
+  ASSERT(layer_index < total_layers, "layer_index out of bounds.");
 
   // Get activation of previous layer (or input)
   Matrix* a_prev = NULL;
@@ -161,11 +161,10 @@ Matrix* calculate_weight_gradient(const Cache* cache, int layer_index,
   return grad_W;
 }
 
-Matrix* calculate_bias_gradient(const Cache* cache, int layer_index,
-                                int total_layers) {
+Matrix* calculate_bias_gradient(const Cache* cache, size_t layer_index,
+                                size_t total_layers) {
   ASSERT(cache != NULL, "Cache cannot be NULL.");
-  ASSERT(layer_index >= 0 && layer_index < total_layers,
-         "layer_index out of bounds.");
+  ASSERT(layer_index < total_layers, "layer_index out of bounds.");
 
   char delta_key[32];
   sprintf(delta_key, "delta_%zu", layer_index);
