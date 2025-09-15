@@ -65,7 +65,7 @@ Matrix* subtract_matrix(Matrix* a, Matrix* b);
 /** @brief Elementwise multiplication: result = a ⊙ b. */
 Matrix* multiply_matrix(Matrix* a, Matrix* b);
 /** @brief Apply scalar function to each element: result[i] = func(m[i]). */
-Matrix* apply_onto_matrix(double* (*func)(double), Matrix* m);
+Matrix* apply_onto_matrix(double (*func)(double), Matrix* m);
 /** @brief Add scalar to all elements. */
 Matrix* add_scalar_to_matrix(Matrix* m, double n);
 /** @brief Matrix product (dot): result = a · b. */
