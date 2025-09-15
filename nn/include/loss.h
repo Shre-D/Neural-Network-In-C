@@ -14,18 +14,18 @@
 
 /** @brief Enumerates supported loss functions. */
 typedef enum {
-  MSE,  /**< Mean Squared Error */
-  CCE,  /**< Categorical Cross-Entropy */
-  MAE,  /**< Mean Absolute Error */
-  BCE,  /**< Binary Cross-Entropy */
+  MSE, /**< Mean Squared Error */
+  CCE, /**< Categorical Cross-Entropy */
+  MAE, /**< Mean Absolute Error */
+  BCE, /**< Binary Cross-Entropy */
 } LossFunctionType;
 
 /** @brief Enumerates supported loss gradients. */
 typedef enum {
-  MSE_GRAD,  /**< Mean Squared Error Gradient */
-  CCE_GRAD,  /**< Categorical Cross-Entropy Gradient */
-  MAE_GRAD,  /**< Mean Absolute Error Gradient */
-  BCE_GRAD,  /**< Binary Cross-Entropy Gradient */
+  MSE_GRAD, /**< Mean Squared Error Gradient */
+  CCE_GRAD, /**< Categorical Cross-Entropy Gradient */
+  MAE_GRAD, /**< Mean Absolute Error Gradient */
+  BCE_GRAD, /**< Binary Cross-Entropy Gradient */
 } LossFunctionGradType;
 
 /** @brief Function pointer type for scalar loss. */

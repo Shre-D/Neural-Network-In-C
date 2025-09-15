@@ -20,8 +20,8 @@ typedef Matrix* (*ActivationFunc)(Matrix*);
  * @brief Fully connected layer parameters and activation.
  */
 typedef struct {
-  Matrix* weights;           /**< Weight matrix (D_in×D_out). */
-  Matrix* bias;              /**< Bias vector as (1×D_out). */
+  Matrix* weights; /**< Weight matrix (D_in×D_out). */
+  Matrix* bias;    /**< Bias vector as (1×D_out). */
 
   ActivationFunc activation; /**< Activation function for this layer. */
 
@@ -37,8 +37,8 @@ typedef struct {
  * @brief Neural network composed of sequential fully connected layers.
  */
 typedef struct {
-  Layer** layers;  /**< Array of layer pointers (length = num_layers). */
-  int num_layers;  /**< Number of layers. */
+  Layer** layers; /**< Array of layer pointers (length = num_layers). */
+  int num_layers; /**< Number of layers. */
 
   /** Caches intermediate forward/backward values. */
   Cache* cache;
