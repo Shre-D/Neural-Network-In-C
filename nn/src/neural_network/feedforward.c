@@ -74,21 +74,28 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
   put_matrix(nn->cache, "input", current_output);
 
   for (int i = 0; i < nn->num_layers; i++) {
-    Matrix* z = dot_matrix(current_output, nn->layers[i]->weights);
+    Matrix* z_linear = dot_matrix(current_output, nn->layers[i]->weights);
+    // Bias add returns a new matrix; capture it to avoid dropping the result.
+    Matrix* z = add_matrix(z_linear, nn->layers[i]->bias);
 
-    add_matrix(z, nn->layers[i]->bias);
-
-    // Cache the intermediate value (z).
+    // Cache the intermediate pre-activation value (z).
     char z_key[32];
     sprintf(z_key, "z_%d", i);
     put_matrix(nn->cache, z_key, z);
 
-    Matrix* a = apply_onto_matrix(nn->layers[i]->activation, z);
+    Matrix* a = NULL;
+    // Handle special-case leaky ReLU with custom alpha.
+    if (nn->layers[i]->activation == leaky_relu_with_alpha) {
+      a = leaky_relu_with_alpha(z, nn->layers[i]->leak_parameter);
+    } else {
+      a = nn->layers[i]->activation(z);
+    }
 
     char a_key[32];
     sprintf(a_key, "a_%d", i);
     put_matrix(nn->cache, a_key, a);
 
+    free_matrix(z_linear);
     free_matrix(z);
     free_matrix(current_output);
     current_output = a;
