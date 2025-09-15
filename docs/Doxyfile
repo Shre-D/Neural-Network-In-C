@@ -1,0 +1,15 @@
+PROJECT_NAME           = "Neural Network in C"
+OUTPUT_DIRECTORY       = ./api
+GENERATE_LATEX         = NO
+GENERATE_HTML          = YES
+RECURSIVE              = YES
+EXTRACT_ALL            = YES
+INPUT                  = ../nn/include ../nn/src
+FILE_PATTERNS          = *.h *.c
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = NO
+STRIP_FROM_PATH        = ../
+OPTIMIZE_OUTPUT_FOR_C  = YES
+TYPEDEF_HIDES_STRUCT   = NO
+GENERATE_TREEVIEW      = YES
+
