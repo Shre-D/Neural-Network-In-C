@@ -186,7 +186,8 @@ Matrix* dot_matrix(Matrix* m1, Matrix* m2) {
     for (size_t j = 0; j < m2->cols; j++) {
       for (size_t k = 0; k < m1->cols; k++) {
         result->matrix_data[i * result->cols + j] +=
-            m1->matrix_data[i * m1->cols + k] * m2->matrix_data[k * m2->cols + j];
+            m1->matrix_data[i * m1->cols + k] *
+            m2->matrix_data[k * m2->cols + j];
       }
     }
   }
@@ -195,10 +196,6 @@ Matrix* dot_matrix(Matrix* m1, Matrix* m2) {
            result->cols);
   return result;
 }
-
-
-
-
 
 /**
  * @brief Transposes a matrix.

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdio.h>
+
 #include "activation.h"
 #include "cache.h"
 #include "linalg.h"
