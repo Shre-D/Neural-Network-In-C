@@ -1,121 +1,177 @@
-#pragma once
-
-#include "linalg.h"
-
 /**
  * @file activation.h
- * @brief Activation functions and their derivatives operating on matrices.
+ * @brief Header for activation functions used in neural networks.
  *
- * All functions return newly allocated matrices; callers own and must free
- * the results. Derivatives are provided for use in backpropagation.
+ * This file defines an enumeration for various activation functions and
+ * declares their corresponding matrix-based functions and their derivatives.
+ * These functions are crucial for introducing non-linearity into neural
+ * networks.
  */
 
-//============================
-// Activation Functions
-//============================
+#ifndef NN_ACTIVATION_H
+#define NN_ACTIVATION_H
+
+#include <stddef.h>
+
+#include "linalg.h"  // Assumes Matrix struct is defined here
 
 /**
- * @brief Sigmoid activation applied elementwise.
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with sigmoid applied.
+ * @brief Enum for different activation functions.
+ *
+ * This enumeration lists the types of activation functions supported
+ * within the neural network framework. Each enumerator corresponds to
+ * a specific non-linear function applied to the output of a layer.
+ */
+typedef enum {
+  RELU,       /**< Rectified Linear Unit activation. */
+  SIGMOID,    /**< Sigmoid activation. */
+  SOFTMAX,    /**< Softmax activation, typically used in the output layer for
+                 multi-class classification. */
+  TANH,       /**< Hyperbolic Tangent activation. */
+  LEAKY_RELU, /**< Leaky Rectified Linear Unit activation. */
+  SIGN,       /**< Sign activation. */
+  IDENTITY,   /**< Identity activation. */
+  HARD_TANH   /**< Hard Tanh activation. */
+} activation_function;
+
+// Activation functions
+
+/**
+ * @brief Applies the Sigmoid activation function element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix with the sigmoid function applied to each element.
  */
 Matrix* sigmoid(Matrix* m);
+
 /**
- * @brief Derivative of sigmoid applied elementwise.
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with sigmoid derivative applied.
+ * @brief Applies the ReLU (Rectified Linear Unit) activation function
+ * element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix with the ReLU function applied to each element.
+ */
+Matrix* relu(Matrix* m);
+
+/**
+ * @brief Applies the Hyperbolic Tangent (tanh) activation function
+ * element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix with the tanh function applied to each element.
+ */
+Matrix* tanh_activation(Matrix* m);
+
+/**
+ * @brief Applies the Leaky ReLU activation function element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @param leak_parameter The leak parameter (alpha) for the Leaky ReLU.
+ * @return A new Matrix with the Leaky ReLU function applied to each element.
+ */
+Matrix* leaky_relu(Matrix* m, double leak_parameter);
+
+/**
+ * @brief Applies the Sign activation function element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix with the Sign function applied to each element.
+ */
+Matrix* sign_activation(Matrix* m);
+
+/**
+ * @brief Applies the Identity activation function element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix that is a copy of the input matrix.
+ */
+Matrix* identity_activation(Matrix* m);
+
+/**
+ * @brief Applies the Hard Tanh activation function element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix with the Hard Tanh function applied to each element.
+ */
+Matrix* hard_tanh(Matrix* m);
+
+/**
+ * @brief Applies the Softmax activation function to a matrix.
+ * This function is typically used in the output layer of a neural network for
+ * multi-class classification. It normalizes the input values into a probability
+ * distribution.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix with the Softmax function applied.
+ */
+Matrix* softmax(Matrix* m);
+
+// Derivatives of activation functions
+
+/**
+ * @brief Computes the derivative of the Sigmoid activation function
+ * element-wise to a matrix.
+ * @param m A pointer to the input Matrix (output of the sigmoid function).
+ * @return A new Matrix with the sigmoid derivative applied to each element.
  */
 Matrix* sigmoid_prime(Matrix* m);
 
 /**
- * @brief ReLU activation applied elementwise.
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with ReLU applied.
- */
-Matrix* relu(Matrix* m);
-/**
- * @brief Derivative of ReLU applied elementwise.
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with ReLU derivative applied.
+ * @brief Computes the derivative of the ReLU activation function element-wise
+ * to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix with the ReLU derivative applied to each element.
  */
 Matrix* relu_prime(Matrix* m);
 
 /**
- * @brief Hyperbolic tangent activation applied elementwise.
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with tanh applied.
- */
-Matrix* tanh_activation(Matrix* m);
-/**
- * @brief Derivative of tanh applied elementwise.
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with tanh derivative applied.
+ * @brief Computes the derivative of the Hyperbolic Tangent (tanh) activation
+ * function element-wise to a matrix.
+ * @param m A pointer to the input Matrix (output of the tanh function).
+ * @return A new Matrix with the tanh derivative applied to each element.
  */
 Matrix* tanh_prime(Matrix* m);
 
 /**
- * @brief Leaky ReLU activation (alpha=0.01) applied elementwise.
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with Leaky ReLU applied.
+ * @brief Computes the derivative of the Leaky ReLU activation function
+ * element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @param leak_parameter The leak parameter (alpha) for the Leaky ReLU.
+ * @return A new Matrix with the Leaky ReLU derivative applied to each element.
  */
-Matrix* leaky_relu(Matrix* m);
-/**
- * @brief Derivative of Leaky ReLU (alpha=0.01) applied elementwise.
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with Leaky ReLU derivative applied.
- */
-Matrix* leaky_relu_prime(Matrix* m);
+Matrix* leaky_relu_prime(Matrix* m, double leak_parameter);
 
 /**
- * @brief Leaky ReLU with custom alpha (leak_parameter).
- * @param m Input matrix (m x n).
- * @param leak_parameter The alpha value for the leak.
- * @return New matrix (m x n) with Leaky ReLU applied.
- */
-Matrix* leaky_relu_with_alpha(Matrix* m, double leak_parameter);
-/**
- * @brief Derivative of Leaky ReLU with custom alpha.
- * @param m Input matrix (m x n).
- * @param leak_parameter The alpha value for the leak.
- * @return New matrix (m x n) with Leaky ReLU derivative applied.
- */
-Matrix* leaky_relu_prime_with_alpha(Matrix* m, double leak_parameter);
-
-/**
- * @brief Sign activation: -1, 0, or +1 elementwise.
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with sign activation applied.
- */
-Matrix* sign_activation(Matrix* m);
-/**
- * @brief Derivative of sign (0 everywhere; undefined at 0).
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) of zeros.
+ * @brief Computes the derivative of the Sign activation function element-wise
+ * to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix with the Sign derivative applied to each element.
  */
 Matrix* sign_prime(Matrix* m);
 
 /**
- * @brief Identity activation (returns a copy).
- * @param m Input matrix (m x n).
- * @return New matrix (m x n), a copy of the input.
- */
-Matrix* identity_activation(Matrix* m);
-/**
- * @brief Derivative of identity (ones).
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) of ones.
+ * @brief Computes the derivative of the Identity activation function
+ * element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix of the same size as the input, with all elements set
+ * to 1.0.
  */
 Matrix* identity_prime(Matrix* m);
 
 /**
- * @brief Hard Tanh activation clamped to [-1, 1].
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with hard tanh applied.
- */
-Matrix* hard_tanh(Matrix* m);
-/**
- * @brief Derivative of Hard Tanh (1 in (-1,1), else 0).
- * @param m Input matrix (m x n).
- * @return New matrix (m x n) with hard tanh derivative applied.
+ * @brief Computes the derivative of the Hard Tanh activation function
+ * element-wise to a matrix.
+ * @param m A pointer to the input Matrix.
+ * @return A new Matrix with the Hard Tanh derivative applied to each element.
  */
 Matrix* hard_tanh_prime(Matrix* m);
+
+/**
+ * @brief Computes the derivative of the Softmax activation function
+ * element-wise to a matrix. This is typically used in conjunction with a loss
+ * function like cross-entropy where the derivative simplifies to output * (1 -
+ * output).
+ * @param m A pointer to the input Matrix (output of the softmax function).
+ * @return A new Matrix with the Softmax derivative applied to each element.
+ */
+Matrix* softmax_prime(Matrix* m);
+
+#endif  // NN_ACTIVATION_H
+/**
+ * @brief Converts an activation function enum to its string representation.
+ * @param func The activation function enum.
+ * @return A string representing the activation function.
+ */
+const char* activation_to_string(activation_function func);

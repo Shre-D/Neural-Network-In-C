@@ -5,6 +5,7 @@
 #include "backprop.h"
 
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,48 +17,52 @@
 
 // Select and compute activation derivative for a layer given its pre-activation
 // input z. Handles common activations and leaky ReLU with optional alpha.
+/**
+ * @brief Selects and computes the derivative of the activation function for a
+ * given layer.
+ * @param layer A pointer to the Layer structure containing the activation type
+ * and parameters.
+ * @param z A pointer to the pre-activation matrix (input to the activation
+ * function).
+ * @return A new matrix containing the element-wise derivative of the activation
+ * function applied to z.
+ */
 static Matrix* activation_derivative_for_layer(const Layer* layer, Matrix* z) {
   ASSERT(layer != NULL, "Layer cannot be NULL.");
   ASSERT(z != NULL, "Pre-activation matrix z cannot be NULL.");
 
-  if (layer->activation == sigmoid) {
-    return sigmoid_prime(z);
+  switch (layer->activation_type) {
+    case SIGMOID:
+      return sigmoid_prime(z);
+    case RELU:
+      return relu_prime(z);
+    case TANH:
+      return tanh_prime(z);
+    case LEAKY_RELU:
+      return leaky_relu_prime(z, layer->leak_parameter);
+    case SIGN:
+      return sign_prime(z);
+    case IDENTITY:
+      return identity_prime(z);
+    case HARD_TANH:
+      return hard_tanh_prime(z);
+    default:
+      LOG_WARN(
+          "Unknown activation function, defaulting derivative to identity.");
+      return identity_prime(z);
   }
-  if (layer->activation == relu) {
-    return relu_prime(z);
-  }
-  if (layer->activation == tanh_activation) {
-    return tanh_prime(z);
-  }
-  if (layer->activation == leaky_relu) {
-    return leaky_relu_prime(z);
-  }
-  if (layer->activation == leaky_relu_with_alpha) {
-    return leaky_relu_prime_with_alpha(z, layer->leak_parameter);
-  }
-  if (layer->activation == sign_activation) {
-    return sign_prime(z);
-  }
-  if (layer->activation == identity_activation) {
-    return identity_prime(z);
-  }
-  if (layer->activation == hard_tanh) {
-    return hard_tanh_prime(z);
-  }
-
-  // Default: identity derivative
-  LOG_WARN("Unknown activation function, defaulting derivative to identity.");
-  return identity_prime(z);
 }
 
 void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
-                   LossFunction loss_func, LossFunctionGrad loss_func_grad) {
+                   LossFunctionType loss_type,
+                   LossFunctionGrad loss_func_grad) {
   ASSERT(nn != NULL, "Neural Network pointer cannot be NULL.");
   ASSERT(nn->cache != NULL, "Cache cannot be NULL.");
   ASSERT(y_true != NULL, "Ground truth matrix cannot be NULL.");
   ASSERT(loss_func_grad != NULL, "Loss gradient function cannot be NULL.");
 
   size_t last_index = nn->num_layers - 1;
+  Layer* last_layer = nn->layers[last_index];
 
   // Get y_hat from cache (activation of last layer)
   char a_last_key[32];
@@ -65,20 +70,30 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
   Matrix* y_hat = cache_get(nn->cache, a_last_key);
   ASSERT(y_hat != NULL, "Cached prediction (y_hat) not found.");
 
-  // dL/da for output layer
-  Matrix* dL_da = loss_func_grad(y_hat, y_true);
-  ASSERT(dL_da != NULL, "Loss gradient returned NULL.");
+  Matrix* delta_last;
+  // Special case for Softmax with CCE
+  if (last_layer->activation_type == SOFTMAX && loss_type == CCE) {
+    delta_last = subtract_matrix(y_hat, (Matrix*)y_true);
+  } else {
+    // dL/da for output layer
+    Matrix* dL_da = loss_func_grad(y_hat, y_true);
+    ASSERT(dL_da != NULL, "Loss gradient returned NULL.");
 
-  // delta for output layer: dL/dz = dL/da .* a'(z)
-  char z_last_key[32];
-  sprintf(z_last_key, "z_%zu", last_index);
-  Matrix* z_last = cache_get(nn->cache, z_last_key);
-  ASSERT(z_last != NULL, "Cached z for last layer not found.");
+    // delta for output layer: dL/dz = dL/da .* a'(z)
+    char z_last_key[32];
+    sprintf(z_last_key, "z_%zu", last_index);
+    Matrix* z_last = cache_get(nn->cache, z_last_key);
+    ASSERT(z_last != NULL, "Cached z for last layer not found.");
 
-  Matrix* act_prime_last =
-      activation_derivative_for_layer(nn->layers[last_index], z_last);
-  Matrix* delta_last = multiply_matrix(dL_da, act_prime_last);
-  ASSERT(delta_last != NULL, "Failed to compute delta for last layer.");
+    Matrix* act_prime_last =
+        activation_derivative_for_layer(last_layer, z_last);
+    delta_last = multiply_matrix(dL_da, act_prime_last);
+    ASSERT(delta_last != NULL, "Failed to compute delta for last layer.");
+
+    free_matrix(dL_da);
+    free_matrix(z_last);
+    free_matrix(act_prime_last);
+  }
 
   char delta_last_key[32];
   sprintf(delta_last_key, "delta_%zu", last_index);
@@ -86,10 +101,6 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
 
   // Clean up temporaries for last layer
   free_matrix(y_hat);
-  free_matrix(dL_da);
-  free_matrix(z_last);
-  free_matrix(act_prime_last);
-  free_matrix(delta_last);
 
   // Backpropagate through hidden layers
   for (size_t i = last_index - 1; i != SIZE_MAX; i--) {
@@ -124,10 +135,18 @@ void backpropagate(NeuralNetwork* nn, const Matrix* y_true,
     free_matrix(propagated);
     free_matrix(z_i);
     free_matrix(act_prime_i);
-    free_matrix(delta_i);
   }
 }
 
+/**
+ * @brief Calculates the gradient of the weights for a specific layer during
+ * backpropagation.
+ * @param cache A pointer to the Cache containing intermediate values.
+ * @param layer_index The index of the current layer.
+ * @param total_layers The total number of layers in the neural network.
+ * @return A new matrix representing the gradient of the weights for the
+ * specified layer.
+ */
 Matrix* calculate_weight_gradient(const Cache* cache, size_t layer_index,
                                   size_t total_layers) {
   ASSERT(cache != NULL, "Cache cannot be NULL.");
@@ -161,6 +180,15 @@ Matrix* calculate_weight_gradient(const Cache* cache, size_t layer_index,
   return grad_W;
 }
 
+/**
+ * @brief Calculates the gradient of the biases for a specific layer during
+ * backpropagation.
+ * @param cache A pointer to the Cache containing intermediate values.
+ * @param layer_index The index of the current layer.
+ * @param total_layers The total number of layers in the neural network.
+ * @return A new matrix representing the gradient of the biases for the
+ * specified layer.
+ */
 Matrix* calculate_bias_gradient(const Cache* cache, size_t layer_index,
                                 size_t total_layers) {
   ASSERT(cache != NULL, "Cache cannot be NULL.");
@@ -171,6 +199,8 @@ Matrix* calculate_bias_gradient(const Cache* cache, size_t layer_index,
   Matrix* delta_i = cache_get((Cache*)cache, delta_key);
   ASSERT(delta_i != NULL, "Cached delta for layer not found.");
 
-  // For single-sample case, bias gradient equals delta
-  return delta_i;  // already a deep copy from cache
+  Matrix* db = sum_matrix_columns(delta_i);
+  free_matrix(delta_i);
+
+  return db;
 }
