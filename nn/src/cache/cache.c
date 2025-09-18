@@ -11,18 +11,29 @@
 #include "linalg.h"
 
 // A linked list is used to handle collisions at each bucket.
+/**
+ * @brief Represents an entry in the cache, storing a key-matrix pair.
+ * Uses a linked list for collision resolution in the hash map.
+ */
 typedef struct CacheEntry {
-  char* key;
-  Matrix* m;
-  struct CacheEntry* next;
+  char* key; /**< The key associated with the matrix. */
+  Matrix* m; /**< The matrix stored in this entry. */
+  struct CacheEntry*
+      next; /**< Pointer to the next entry in case of collision. */
 } CacheEntry;
 
 #define HASH_MAP_SIZE 1024
 
 struct Cache {
-  CacheEntry* entries[HASH_MAP_SIZE];
+  CacheEntry* entries[HASH_MAP_SIZE]; /**< Array of pointers to CacheEntry,
+                                         forming the hash table buckets. */
 };
 
+/**
+ * @brief Computes a hash value for a given string key.
+ * @param key The string key to hash.
+ * @return An unsigned integer hash value, modulo HASH_MAP_SIZE.
+ */
 static unsigned int hash(const char* key) {
   // This hash function can be manipulated. You could input a key
   // that could overflow a 32 bit uint, so I've made it a 64 bit
@@ -42,6 +53,11 @@ static unsigned int hash(const char* key) {
 // Cache Functions
 //------------------------------
 
+/**
+ * @brief Creates and initializes a new, empty cache.
+ * @return A pointer to the newly created Cache, or NULL if memory allocation
+ * fails.
+ */
 Cache* create_cache() {
   Cache* cache = (Cache*)malloc(sizeof(Cache));
   if (cache == NULL) {
@@ -54,7 +70,15 @@ Cache* create_cache() {
   return cache;
 }
 
-void cache_put(Cache* cache, const char* key, const Matrix* m) {
+/**
+ * @brief Stores a matrix in the cache under a specified key.
+ * If the key already exists, the old matrix is freed and replaced with the new
+ * one. The cache takes ownership of the matrix `m`.
+ * @param cache A pointer to the Cache structure.
+ * @param key The string key for the matrix.
+ * @param m A pointer to the Matrix to be stored.
+ */
+void cache_put(Cache* cache, const char* key, Matrix* m) {
   if (cache == NULL || key == NULL || m == NULL) {
     return;
   }
@@ -66,7 +90,7 @@ void cache_put(Cache* cache, const char* key, const Matrix* m) {
     if (strcmp(current->key, key) == 0) {
       // Key found, free existing matrix and update with new one.
       free_matrix(current->m);
-      current->m = copy_matrix(m);  // Deep copy
+      current->m = m;
       return;
     }
     current = current->next;
@@ -77,11 +101,18 @@ void cache_put(Cache* cache, const char* key, const Matrix* m) {
     return;
   }
   new_entry->key = strdup(key);
-  new_entry->m = copy_matrix(m);  // Deep copy to prevent side effects
+  new_entry->m = m;
   new_entry->next = cache->entries[index];
   cache->entries[index] = new_entry;
 }
 
+/**
+ * @brief Retrieves a deep copy of a matrix from the cache using its key.
+ * @param cache A pointer to the Cache structure.
+ * @param key The string key of the matrix to retrieve.
+ * @return A deep copy of the stored Matrix, or NULL if the key is not found or
+ * allocation fails. The caller is responsible for freeing the returned matrix.
+ */
 Matrix* cache_get(Cache* cache, const char* key) {
   if (cache == NULL || key == NULL) {
     return NULL;
@@ -97,6 +128,11 @@ Matrix* cache_get(Cache* cache, const char* key) {
   return NULL;
 }
 
+/**
+ * @brief Clears all entries from the cache, freeing associated memory for keys
+ * and matrices. The cache structure itself is not freed.
+ * @param cache A pointer to the Cache structure to clear.
+ */
 void clear_cache(Cache* cache) {
   if (cache == NULL) {
     return;
@@ -114,6 +150,10 @@ void clear_cache(Cache* cache) {
   }
 }
 
+/**
+ * @brief Frees all entries in the cache and the cache structure itself.
+ * @param cache A pointer to the Cache structure to free.
+ */
 void free_cache(Cache* cache) {
   if (cache == NULL) {
     return;
