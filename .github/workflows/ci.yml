@@ -1,5 +1,4 @@
-# .github/workflows/ci.yml
-name: C/C++ CI
+name: Neural Network CI
 
 on:
   pull_request:
@@ -12,17 +11,29 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache build dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/pip
+            build
+          key: ${{ runner.os }}-build-${{ hashFiles('**/Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
       - name: Install build tools and linter
-        run: sudo apt-get update && sudo apt-get install -y clang-format cppcheck
+        run: sudo apt-get update && sudo apt-get install -y clang-format cppcheck libcunit1-dev
 
       - name: Check code formatting
         run: |
-          mkdir -p ../temp_repo
-          cp -r . ../temp_repo
-          find ../temp_repo -name "*.c" -o -name "*.h" | xargs clang-format -i --style=Google
-          diff -u -r ../temp_repo .
+          find . -name "*.c" -o -name "*.h" | xargs clang-format --dry-run --Werror --style=Google
+
+      - name: Build project
+        run: make all
+
+      - name: Run tests
+        run: make test
 
       - name: Run static code analysis
         run: |
-          # The suppress flag tells cppcheck to ignore unused function warnings.
-          cppcheck --enable=all -I nn/include --suppress=missingIncludeSystem --suppress=unusedFunction --inconclusive --error-exitcode=1 .
+          cppcheck --enable=all -I nn/include --suppress=missingIncludeSystem --inconclusive --error-exitcode=1 .
