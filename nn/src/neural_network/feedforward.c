@@ -81,7 +81,7 @@ void free_network(NeuralNetwork* nn) {
  * @return A new matrix containing the output of the last layer of the network.
  * The caller is responsible for freeing this matrix.
  */
-Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
+Matrix* feedforward(const NeuralNetwork* nn, const Matrix* input) {
   ASSERT(nn != NULL, "Neural Network pointer cannot be NULL.");
   ASSERT(input != NULL, "Input matrix cannot be NULL.");
   ASSERT(input->cols == nn->layers[0]->weights->rows,

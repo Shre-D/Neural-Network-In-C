@@ -15,6 +15,10 @@
 #include "linalg.h"
 #include "utils.h"
 
+#ifdef USE_OPENMP
+#include <omp.h>
+#endif
+
 //============================
 // Functions for Matrix Operations
 //============================
@@ -46,6 +50,9 @@ Matrix* add_matrix(Matrix* a, Matrix* b) {
   Matrix* result = create_matrix(a->rows, a->cols);
   size_t total_elements = a->rows * a->cols;
 
+#ifdef USE_OPENMP
+#pragma omp parallel for
+#endif
   for (size_t i = 0; i < total_elements; i++) {
     result->matrix_data[i] = a->matrix_data[i] + b->matrix_data[i];
   }
@@ -69,6 +76,9 @@ Matrix* subtract_matrix(Matrix* a, Matrix* b) {
   Matrix* result = create_matrix(a->rows, a->cols);
   size_t total_elements = a->rows * a->cols;
 
+#ifdef USE_OPENMP
+#pragma omp parallel for
+#endif
   for (size_t i = 0; i < total_elements; i++) {
     result->matrix_data[i] = a->matrix_data[i] - b->matrix_data[i];
   }
@@ -94,6 +104,9 @@ Matrix* multiply_matrix(Matrix* a, Matrix* b) {
   Matrix* result = create_matrix(a->rows, a->cols);
   size_t total_elements = a->rows * a->cols;
 
+#ifdef USE_OPENMP
+#pragma omp parallel for
+#endif
   for (size_t i = 0; i < total_elements; i++) {
     result->matrix_data[i] = a->matrix_data[i] * b->matrix_data[i];
   }
@@ -115,6 +128,9 @@ Matrix* apply_onto_matrix(double (*func)(double), Matrix* m) {
   Matrix* result = create_matrix(m->rows, m->cols);
   size_t total_elements = m->rows * m->cols;
 
+#ifdef USE_OPENMP
+#pragma omp parallel for
+#endif
   for (size_t i = 0; i < total_elements; i++) {
     result->matrix_data[i] = func(m->matrix_data[i]);
   }
@@ -135,6 +151,9 @@ Matrix* add_scalar_to_matrix(Matrix* m, double n) {
   Matrix* result = create_matrix(m->rows, m->cols);
   size_t total_elements = m->rows * m->cols;
 
+#ifdef USE_OPENMP
+#pragma omp parallel for
+#endif
   for (size_t i = 0; i < total_elements; i++) {
     result->matrix_data[i] = m->matrix_data[i] + n;
   }
@@ -149,29 +168,32 @@ Matrix* add_scalar_to_matrix(Matrix* m, double n) {
  * @param b The second matrix.
  * @return A new matrix containing the result of the dot product a * b.
  */
-Matrix* dot_matrix(Matrix* a, Matrix* b) {
-  ASSERT(a != NULL && b != NULL, "Input matrices cannot be NULL.");
-  ASSERT(a->cols == b->rows,
-         "The number of columns in the first matrix must equal the number of "
-         "rows in the second matrix for dot product.");
+Matrix* dot_matrix(Matrix* m1, Matrix* m2) {
+  ASSERT(m1 != NULL && m2 != NULL, "Input matrices cannot be NULL.");
+  ASSERT(m1->cols == m2->rows,
+         "Matrices dimensions are incompatible for dot product.");
 
-  LOG_INFO("Performing dot product on a %zux%zu and a %zux%zu matrix.", a->rows,
-           a->cols, b->rows, b->cols);
-  Matrix* result = create_matrix(a->rows, b->cols);
+  LOG_INFO("Performing dot product of %zux%zu and %zux%zu matrices.", m1->rows,
+           m1->cols, m2->rows, m2->cols);
+  Matrix* result = create_matrix(m1->rows, m2->cols);
+  // Initialize result matrix with zeros
+  memset(result->matrix_data, 0, m1->rows * m2->cols * sizeof(double));
 
-  for (size_t i = 0; i < a->rows; i++) {
-    for (size_t j = 0; j < b->cols; j++) {
-      double sum = 0;
-      for (size_t k = 0; k < a->cols; k++) {
-        sum +=
-            a->matrix_data[i * a->cols + k] * b->matrix_data[k * b->cols + j];
+#ifdef USE_OPENMP
+#pragma omp parallel for collapse(2)
+#endif
+  for (size_t i = 0; i < m1->rows; i++) {
+    for (size_t j = 0; j < m2->cols; j++) {
+      for (size_t k = 0; k < m1->cols; k++) {
+        result->matrix_data[i * result->cols + j] +=
+            m1->matrix_data[i * m1->cols + k] *
+            m2->matrix_data[k * m2->cols + j];
       }
-      result->matrix_data[i * result->cols + j] = sum;
     }
   }
 
-  LOG_INFO("Matrix dot product complete. Resulting matrix is %zux%zu.",
-           result->rows, result->cols);
+  LOG_INFO("Dot product complete. Resulting matrix is %zux%zu.", result->rows,
+           result->cols);
   return result;
 }
 
@@ -185,6 +207,9 @@ Matrix* transpose_matrix(Matrix* m) {
   LOG_INFO("Transposing a %zux%zu matrix.", m->rows, m->cols);
   Matrix* result = create_matrix(m->cols, m->rows);
 
+#ifdef USE_OPENMP
+#pragma omp parallel for collapse(2)
+#endif
   for (size_t i = 0; i < m->rows; i++) {
     for (size_t j = 0; j < m->cols; j++) {
       result->matrix_data[j * result->cols + i] =
@@ -209,6 +234,9 @@ Matrix* scale_matrix(double n, Matrix* m) {
   Matrix* result = create_matrix(m->rows, m->cols);
   size_t total_elements = m->rows * m->cols;
 
+#ifdef USE_OPENMP
+#pragma omp parallel for
+#endif
   for (size_t i = 0; i < total_elements; i++) {
     result->matrix_data[i] = m->matrix_data[i] * n;
   }
@@ -233,6 +261,9 @@ Matrix* add_bias_to_matrix(Matrix* m, Matrix* bias) {
   Matrix* result = create_matrix(m->rows, m->cols);
   ASSERT(result != NULL, "Failed to create matrix for bias addition.");
 
+#ifdef USE_OPENMP
+#pragma omp parallel for collapse(2)
+#endif
   for (size_t i = 0; i < m->rows; i++) {
     for (size_t j = 0; j < m->cols; j++) {
       result->matrix_data[i * m->cols + j] =
@@ -255,6 +286,9 @@ Matrix* sum_matrix_columns(Matrix* m) {
   Matrix* result = create_matrix(1, m->cols);
   ASSERT(result != NULL, "Failed to create matrix for column summation.");
 
+#ifdef USE_OPENMP
+#pragma omp parallel for
+#endif
   for (size_t j = 0; j < m->cols; j++) {
     double sum = 0;
     for (size_t i = 0; i < m->rows; i++) {

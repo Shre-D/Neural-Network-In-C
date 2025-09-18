@@ -31,4 +31,4 @@ void free_network(NeuralNetwork* nn);
  * @return Output activation of the last layer (batch_size x output_features).
  *         Caller owns and must free.
  */
-Matrix* feedforward(NeuralNetwork* nn, const Matrix* input);
+Matrix* feedforward(const NeuralNetwork* nn, const Matrix* input);
