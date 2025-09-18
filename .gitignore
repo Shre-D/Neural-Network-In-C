@@ -3,3 +3,6 @@ build
 
 # Doxygen output
 docs/api/
+
+# Object files
+*.o
