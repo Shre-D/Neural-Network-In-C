@@ -1,6 +1,13 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -I nn/include -I tests -Wall -Wextra -Werror -Wpedantic -Wstrict-prototypes -Wold-style-definition -g $(CU_CFLAGS)
+# OpenMP Flag
+ifdef USE_OPENMP
+    OPENMP_FLAG = -fopenmp
+else
+    OPENMP_FLAG = 
+endif
+
+CFLAGS = -I nn/include -I tests -Wall -Wextra -Werror -Wpedantic -Wstrict-prototypes -Wold-style-definition -g $(CU_CFLAGS) $(OPENMP_FLAG)
 
 # Source files
 SRCS = $(shell find nn/src -name '*.c' -not -path 'nn/src/main.c')
