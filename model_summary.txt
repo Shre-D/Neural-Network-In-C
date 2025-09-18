@@ -1,0 +1,26 @@
+==================================
+      Neural Network Summary      
+==================================
+Number of layers: 2
+----------------------------------
+Layer 1:
+  Weights matrix: 2 x 4
+  Bias matrix:    1 x 4
+  Activation:     RELU
+----------------------------------
+Layer 2:
+  Weights matrix: 4 x 1
+  Bias matrix:    1 x 1
+  Activation:     SIGMOID
+==================================
+
+==================================
+         Model Predictions        
+==================================
+Input -> Expected | Predicted (Rounded)
+----------------------------------
+Input: (0, 0) -> Expected: 0 | Predicted: 0.5000 (Rounded: 1)
+Input: (0, 1) -> Expected: 1 | Predicted: 0.9829 (Rounded: 1)
+Input: (1, 0) -> Expected: 1 | Predicted: 0.9924 (Rounded: 1)
+Input: (1, 1) -> Expected: 0 | Predicted: 0.9989 (Rounded: 1)
+==================================
