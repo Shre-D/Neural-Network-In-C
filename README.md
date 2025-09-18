@@ -83,6 +83,12 @@ The provided `Makefile` automates the build process for the library, tests, and 
   ```
   make format
   ```
+* **Generate docs:**
+  **Bash**
+
+  ```
+  cd docs && doxygen Doxyfile
+  ```
 
 ---
 
