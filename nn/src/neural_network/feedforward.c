@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "activation.h"
 #include "linalg.h"
 #include "neural_network.h"
 #include "utils.h"
@@ -25,6 +26,10 @@ NeuralNetwork* create_network(size_t num_layers) {
     free(nn);
     return NULL;
   }
+  // Initialize layer pointers to NULL
+  for (size_t i = 0; i < num_layers; i++) {
+    nn->layers[i] = NULL;
+  }
 
   nn->num_layers = num_layers;
   nn->cache = create_cache();
@@ -37,6 +42,11 @@ NeuralNetwork* create_network(size_t num_layers) {
   return nn;
 }
 
+/**
+ * @brief Frees all memory associated with a neural network.
+ * This includes layers, weights, biases, and the cache.
+ * @param nn A pointer to the NeuralNetwork structure to be freed.
+ */
 void free_network(NeuralNetwork* nn) {
   if (nn == NULL) {
     return;
@@ -62,16 +72,25 @@ void free_network(NeuralNetwork* nn) {
   free(nn);
 }
 
+/**
+ * @brief Performs a forward pass through the neural network.
+ * Computes the output of the network for a given input and caches intermediate
+ * values.
+ * @param nn A pointer to the NeuralNetwork structure.
+ * @param input A pointer to the input Matrix.
+ * @return A new matrix containing the output of the last layer of the network.
+ * The caller is responsible for freeing this matrix.
+ */
 Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
   ASSERT(nn != NULL, "Neural Network pointer cannot be NULL.");
   ASSERT(input != NULL, "Input matrix cannot be NULL.");
-  ASSERT(input->rows == nn->layers[0]->weights->cols,
+  ASSERT(input->cols == nn->layers[0]->weights->rows,
          "Input dimensions must match network dimensions.");
 
   Matrix* current_output = copy_matrix(input);
   ASSERT(current_output != NULL, "Failed to copy input matrix.");
 
-  cache_put(nn->cache, "input", current_output);
+  cache_put(nn->cache, "input", copy_matrix(current_output));
 
   for (size_t i = 0; i < nn->num_layers; i++) {
     Layer* current_layer = nn->layers[i];
@@ -84,7 +103,7 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
                z_linear->cols == current_layer->weights->cols,
            "Unexpected shape from dot product.");
 
-    Matrix* z = add_matrix(z_linear, current_layer->bias);
+    Matrix* z = add_bias_to_matrix(z_linear, current_layer->bias);
     ASSERT(z != NULL, "Bias add failed.");
     ASSERT(z->rows == z_linear->rows && z->cols == z_linear->cols,
            "Unexpected shape from bias add.");
@@ -92,14 +111,38 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
     // Cache the intermediate pre-activation value (z).
     char z_key[32];
     sprintf(z_key, "z_%zu", i);
-    cache_put(nn->cache, z_key, z);
+    cache_put(nn->cache, z_key, copy_matrix(z));
 
     Matrix* a = NULL;
-    // Handle special-case leaky ReLU with custom alpha.
-    if (current_layer->activation == leaky_relu_with_alpha) {
-      a = leaky_relu_with_alpha(z, current_layer->leak_parameter);
-    } else {
-      a = current_layer->activation(z);
+    switch (current_layer->activation_type) {
+      case SIGMOID:
+        a = sigmoid(z);
+        break;
+      case RELU:
+        a = relu(z);
+        break;
+      case TANH:
+        a = tanh_activation(z);
+        break;
+      case LEAKY_RELU:
+        a = leaky_relu(z, current_layer->leak_parameter);
+        break;
+      case SIGN:
+        a = sign_activation(z);
+        break;
+      case IDENTITY:
+        a = identity_activation(z);
+        break;
+      case HARD_TANH:
+        a = hard_tanh(z);
+        break;
+      case SOFTMAX:
+        a = softmax(z);
+        break;
+      default:
+        LOG_WARN("Unknown activation function, defaulting to identity.");
+        a = identity_activation(z);
+        break;
     }
     ASSERT(a != NULL, "Activation failed.");
     ASSERT(a->rows == z->rows && a->cols == z->cols,
@@ -107,7 +150,7 @@ Matrix* feedforward(NeuralNetwork* nn, const Matrix* input) {
 
     char a_key[32];
     sprintf(a_key, "a_%zu", i);
-    cache_put(nn->cache, a_key, a);
+    cache_put(nn->cache, a_key, copy_matrix(a));
 
     free_matrix(z_linear);
     free_matrix(z);

@@ -26,10 +26,8 @@ void free_network(NeuralNetwork* nn);
 
 /**
  * @brief Run the forward pass and cache intermediates for backprop.
- *
  * @param nn Network pointer (non-NULL).
  * @param input Input matrix (batch_size x input_features).
- *              Shape must match the first layer's expected input shape.
  * @return Output activation of the last layer (batch_size x output_features).
  *         Caller owns and must free.
  */

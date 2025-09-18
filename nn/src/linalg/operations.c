@@ -19,6 +19,11 @@
 // Functions for Matrix Operations
 //============================
 
+/**
+ * @brief Creates an identity matrix of size n x n.
+ * @param n The dimension of the square identity matrix.
+ * @return A pointer to the newly created identity Matrix.
+ */
 Matrix* identity_matrix(size_t n) {
   LOG_INFO("Creating a %zux%zu identity matrix.", n, n);
   ASSERT(n > 0, "Matrix size must be greater than 0.");
@@ -49,6 +54,12 @@ Matrix* add_matrix(Matrix* a, Matrix* b) {
   return result;
 }
 
+/**
+ * @brief Performs element-wise subtraction of two matrices.
+ * @param a The first matrix (minuend).
+ * @param b The second matrix (subtrahend).
+ * @return A new matrix containing the result of a - b.
+ */
 Matrix* subtract_matrix(Matrix* a, Matrix* b) {
   ASSERT(a != NULL && b != NULL, "Input matrices cannot be NULL.");
   ASSERT(a->rows == b->rows && a->cols == b->cols,
@@ -66,6 +77,13 @@ Matrix* subtract_matrix(Matrix* a, Matrix* b) {
   return result;
 }
 
+/**
+ * @brief Performs element-wise multiplication of two matrices (Hadamard
+ * product).
+ * @param a The first matrix.
+ * @param b The second matrix.
+ * @return A new matrix containing the element-wise product of a and b.
+ */
 Matrix* multiply_matrix(Matrix* a, Matrix* b) {
   ASSERT(a != NULL && b != NULL, "Input matrices cannot be NULL.");
   ASSERT(a->rows == b->rows && a->cols == b->cols,
@@ -84,6 +102,12 @@ Matrix* multiply_matrix(Matrix* a, Matrix* b) {
   return result;
 }
 
+/**
+ * @brief Applies a given function to each element of a matrix.
+ * @param func A function pointer that takes a double and returns a double.
+ * @param m The input matrix.
+ * @return A new matrix with the function applied to each element.
+ */
 Matrix* apply_onto_matrix(double (*func)(double), Matrix* m) {
   ASSERT(m != NULL, "Input matrix cannot be NULL.");
   LOG_INFO("Applying a function to each element of a %zux%zu matrix.", m->rows,
@@ -99,6 +123,12 @@ Matrix* apply_onto_matrix(double (*func)(double), Matrix* m) {
   return result;
 }
 
+/**
+ * @brief Adds a scalar value to each element of a matrix.
+ * @param m The input matrix.
+ * @param n The scalar value to add.
+ * @return A new matrix with the scalar added to each element.
+ */
 Matrix* add_scalar_to_matrix(Matrix* m, double n) {
   ASSERT(m != NULL, "Input matrix cannot be NULL.");
   LOG_INFO("Adding scalar %.2f to a %zux%zu matrix.", n, m->rows, m->cols);
@@ -113,6 +143,12 @@ Matrix* add_scalar_to_matrix(Matrix* m, double n) {
   return result;
 }
 
+/**
+ * @brief Performs the dot product (matrix multiplication) of two matrices.
+ * @param a The first matrix.
+ * @param b The second matrix.
+ * @return A new matrix containing the result of the dot product a * b.
+ */
 Matrix* dot_matrix(Matrix* a, Matrix* b) {
   ASSERT(a != NULL && b != NULL, "Input matrices cannot be NULL.");
   ASSERT(a->cols == b->rows,
@@ -139,6 +175,11 @@ Matrix* dot_matrix(Matrix* a, Matrix* b) {
   return result;
 }
 
+/**
+ * @brief Transposes a matrix.
+ * @param m The input matrix.
+ * @return A new matrix that is the transpose of the input matrix.
+ */
 Matrix* transpose_matrix(Matrix* m) {
   ASSERT(m != NULL, "Input matrix cannot be NULL.");
   LOG_INFO("Transposing a %zux%zu matrix.", m->rows, m->cols);
@@ -156,6 +197,12 @@ Matrix* transpose_matrix(Matrix* m) {
   return result;
 }
 
+/**
+ * @brief Scales all elements of a matrix by a scalar value.
+ * @param n The scalar value to multiply by.
+ * @param m The input matrix.
+ * @return A new matrix with all elements scaled by n.
+ */
 Matrix* scale_matrix(double n, Matrix* m) {
   ASSERT(m != NULL, "Input matrix cannot be NULL.");
   LOG_INFO("Scaling a %zux%zu matrix by %.2f.", m->rows, m->cols, n);
@@ -167,5 +214,54 @@ Matrix* scale_matrix(double n, Matrix* m) {
   }
 
   LOG_INFO("Matrix scaling complete.");
+  return result;
+}
+
+/**
+ * @brief Adds a bias vector to each row of a matrix.
+ * @param m The input matrix.
+ * @param bias The bias vector (must be a 1xN row vector where N is m->cols).
+ * @return A new matrix with the bias added to each row.
+ */
+Matrix* add_bias_to_matrix(Matrix* m, Matrix* bias) {
+  ASSERT(m != NULL, "Input matrix is NULL.");
+  ASSERT(bias != NULL, "Bias matrix is NULL.");
+  ASSERT(bias->rows == 1, "Bias must be a row vector.");
+  ASSERT(m->cols == bias->cols,
+         "Matrix and bias dimensions are incompatible for addition.");
+
+  Matrix* result = create_matrix(m->rows, m->cols);
+  ASSERT(result != NULL, "Failed to create matrix for bias addition.");
+
+  for (size_t i = 0; i < m->rows; i++) {
+    for (size_t j = 0; j < m->cols; j++) {
+      result->matrix_data[i * m->cols + j] =
+          m->matrix_data[i * m->cols + j] + bias->matrix_data[j];
+    }
+  }
+
+  return result;
+}
+
+/**
+ * @brief Sums the columns of a matrix, returning a row vector.
+ * @param m The input matrix.
+ * @return A new 1xN matrix (row vector) where each element is the sum of the
+ * corresponding column in m.
+ */
+Matrix* sum_matrix_columns(Matrix* m) {
+  ASSERT(m != NULL, "Input matrix is NULL.");
+
+  Matrix* result = create_matrix(1, m->cols);
+  ASSERT(result != NULL, "Failed to create matrix for column summation.");
+
+  for (size_t j = 0; j < m->cols; j++) {
+    double sum = 0;
+    for (size_t i = 0; i < m->rows; i++) {
+      sum += m->matrix_data[i * m->cols + j];
+    }
+    result->matrix_data[j] = sum;
+  }
+
   return result;
 }
