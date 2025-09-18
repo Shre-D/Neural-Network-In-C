@@ -40,20 +40,16 @@ Matrix* read_matrix(const char* filename);
 Matrix* create_matrix(size_t rows, size_t cols);
 /** @brief Deep copy a matrix. */
 Matrix* copy_matrix(const Matrix* m);
-/** @brief Flatten a matrix along an axis (implementation-specific). */
-Matrix* flatten_matrix(Matrix* m, int axis);
 /** @brief Fill all elements with a constant value. */
 void fill_matrix(Matrix* m, double n);
 /** @brief Fill with random values in an implementation-defined range. */
 void randomize_matrix(Matrix* m, double n);
 /** @brief Free a matrix and its data buffer. */
 void free_matrix(Matrix* m);
-/** @brief Write a matrix to a text file. */
-void write_matrix(Matrix* m, const char* filename);
 /** @brief Print a matrix to stdout (for debugging). */
 void print_matrix(Matrix* m);
 /** @brief Return the index of the maximum element (flattened argmax). */
-int matrix_argmax(Matrix* m);
+size_t matrix_argmax(Matrix* m);
 
 //============================
 // Matrix Operations
@@ -76,3 +72,9 @@ Matrix* dot_matrix(Matrix* a, Matrix* b);
 Matrix* transpose_matrix(Matrix* m);
 /** @brief Scale all elements by scalar n. */
 Matrix* scale_matrix(double n, Matrix* m);
+
+/** @brief Add a bias vector to each row of a matrix. */
+Matrix* add_bias_to_matrix(Matrix* m, Matrix* bias);
+
+/** @brief Sum the columns of a matrix, returning a row vector. */
+Matrix* sum_matrix_columns(Matrix* m);
