@@ -17,6 +17,7 @@
 #include "linalg.h"
 #include "loss.h"
 #include "neural_network.h"
+#include "summary.h"
 #include "utils.h"
 
 /**
@@ -76,7 +77,16 @@ int main() {
   }
 
   // 3. Print Network Summary
-  print_network_summary(nn);
+  FILE* summary_file = fopen("model_summary.txt", "w");
+  if (summary_file == NULL) {
+    LOG_ERROR("Failed to open model_summary.txt for writing.");
+    // Handle error, but continue for now to avoid stopping the whole process
+  } else {
+    fprint_network_summary(summary_file, nn);
+    fprint_model_predictions(summary_file, nn, x_train,
+                             y_train);  // Add predictions
+    fclose(summary_file);
+  }
 
   // 4. Training Parameters
   double learning_rate = 0.1;
@@ -84,6 +94,11 @@ int main() {
 
   printf("Training XOR network with %d epochs, learning rate %.2f\n", epochs,
          learning_rate);
+
+  FILE* log_file = fopen("training_log.txt", "w");
+  if (log_file == NULL) {
+    LOG_ERROR("Failed to open training_log.txt for writing.");
+  }
 
   // 5. Training Loop
   for (int epoch = 0; epoch < epochs; epoch++) {
@@ -124,7 +139,9 @@ int main() {
     }
     free_matrix(y_hat);
 
-    log_training_progress(epoch, epochs, total_loss);
+    if (log_file != NULL) {
+      flog_training_progress(log_file, epoch, epochs, total_loss);
+    }
   }
 
   printf("\nTraining complete. Testing network...\n");
@@ -153,6 +170,9 @@ int main() {
   free_matrix(x_train);
   free_matrix(y_train);
   free_matrix(predictions);
+
+  if (log_file != NULL) fclose(log_file);
+
   free_network(nn);
 
   printf("\nMemory freed. XOR example finished.\n");
