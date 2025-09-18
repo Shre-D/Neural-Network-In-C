@@ -2,7 +2,7 @@
 
 A from-scratch implementation of a simple feedforward neural network, written entirely in C. This project was built to gain a deep, first-principles understanding of the algorithms that power modern deep learning, focusing on implementation of the basics from scratch.
 
-## Project Philosophy
+## Project Goals
 
 The goal of this project is not to compete with established libraries like PyTorch or TensorFlow, but to deconstruct them. By implementing core components from matrix multiplication to backpropagation in a low-level language like C, this work demonstrates the mathematical concepts and the engineering challenges involved in building deep learning systems from the ground up.
 
@@ -10,7 +10,7 @@ The goal of this project is not to compete with established libraries like PyTor
 
 * **First-Principles Implementation:** Successfully implemented feedforward, backpropagation, and gradient descent without external ML dependencies.
 * **Custom Linear Algebra Engine:** Developed and optimized essential linear algebra operations from scratch, with a focus on explicit memory management.
-* **Robust & High-Quality Code:** Built as a clean, well-documented, and robust library, incorporating best practices for C development and defensive programming.
+* **Good C Practices:** Built as a clean, well-documented, and robust library, incorporating best practices for C development and defensive programming.
 * **Comprehensive Testing:** Established a solid testing framework using CUnit and a Continuous Integration (CI) pipeline to ensure correctness and prevent regressions.
 
 ---
