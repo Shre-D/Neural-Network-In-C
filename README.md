@@ -35,8 +35,8 @@ To build and run this project, you will need the following tools:
    **Bash**
 
    ```
-   git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
-   cd YOUR_REPO
+   git clone https://github.com/Shre-D/Neural-Network-In-C.git
+   cd Neural-Network-In-C
    ```
 2. Set up Git Hooks:
    The project includes pre-commit hooks for formatting. Make them executable by running the initialization script:
